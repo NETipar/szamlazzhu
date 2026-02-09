@@ -1,0 +1,48 @@
+{
+    "name": "netipar/szamlazzhu",
+    "description": "Modern Laravel package for the szamlazz.hu invoicing API",
+    "keywords": ["laravel", "szamlazz", "invoice", "hungary", "számlázás"],
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/http": "^10.0|^11.0|^12.0",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "pestphp/pest": "^2.0|^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "NETipar\\Szamlazzhu\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NETipar\\Szamlazzhu\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "NETipar\\Szamlazzhu\\SzamlazzhuServiceProvider"
+            ],
+            "aliases": {
+                "Szamlazzhu": "NETipar\\Szamlazzhu\\Facades\\Szamlazzhu"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
