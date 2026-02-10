@@ -7,6 +7,7 @@
 # Szamlazz.hu for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/netipar/szamlazzhu.svg?style=flat-square)](https://packagist.org/packages/netipar/szamlazzhu)
+[![Tests](https://img.shields.io/github/actions/workflow/status/NETipar/szamlazzhu/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/NETipar/szamlazzhu/actions?query=workflow%3ATests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/netipar/szamlazzhu.svg?style=flat-square)](https://packagist.org/packages/netipar/szamlazzhu)
 
 Modern Laravel package for the [szamlazz.hu](https://www.szamlazz.hu) invoicing API. Generate invoices, receipts, proforma invoices, delivery notes, query invoice data, download PDFs, and more.
