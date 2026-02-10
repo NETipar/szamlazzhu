@@ -2,6 +2,13 @@
 
 All notable changes to `netipar/szamlazzhu` will be documented in this file.
 
+## v1.0.2 - 2026-02-10
+
+### Fixed
+- Added `guzzlehttp/guzzle` as explicit dependency (required for Laravel 10 where `illuminate/http` only suggests it)
+- Added `phpunit.xml.dist` for proper PHPUnit/Pest configuration in CI
+- Fixed CI workflow: dropped PHP 8.1 from test matrix (Pint and Pest require 8.2+), separated Pint into dedicated job
+
 ## v1.0.1 - 2026-02-10
 
 ### Added

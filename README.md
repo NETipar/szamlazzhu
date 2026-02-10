@@ -54,7 +54,7 @@ $result->getPdfFile();        // PDF binary string
 
 ## Requirements
 
-- PHP 8.1+
+- PHP 8.2+
 - Laravel 10, 11, or 12
 - A [szamlazz.hu](https://www.szamlazz.hu) account with API key
 
