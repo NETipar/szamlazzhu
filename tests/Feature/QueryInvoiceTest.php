@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
 use NETipar\Szamlazzhu\Client;
+use NETipar\Szamlazzhu\Enums\LookupType;
+use NETipar\Szamlazzhu\Exceptions\ValidationException;
 
 it('queries invoice data by invoice number', function () {
     $invoiceXml = '<?xml version="1.0" encoding="UTF-8"?>'
@@ -40,7 +42,69 @@ it('queries invoice data by invoice number', function () {
 
     expect($data['result']['alap']['szamlaszam'])->toBe('E-TESZT-2026-001')
         ->and($data['result']['vevo']['nev'])->toBe('Teszt Kft.');
+
+    Http::assertSent(function ($request) {
+        return ! str_contains((string) $request->body(), 'szamlaKulsoAzon');
+    });
 });
+
+it('queries invoice data by external id', function () {
+    $invoiceXml = '<?xml version="1.0" encoding="UTF-8"?>'
+        .'<xmlszamlavalasz>'
+        .'<alap><szamlaszam>E-TESZT-2026-001</szamlaszam><tipus>SZ</tipus></alap>'
+        .'</xmlszamlavalasz>';
+
+    Http::fake([
+        'www.szamlazz.hu/*' => Http::response($invoiceXml, 200, [
+            'Content-Type' => 'application/octet-stream',
+            'szlahu_szamlaszam' => 'E-TESZT-2026-001',
+            'szlahu_id' => '123456789',
+        ]),
+    ]);
+
+    $client = app(Client::class);
+    $result = $client->getInvoiceData('EXT-77', LookupType::ExternalId);
+
+    expect($result->isSuccess())->toBeTrue();
+
+    Http::assertSent(function ($request) {
+        $body = (string) $request->body();
+
+        return str_contains($body, 'szamlaKulsoAzon')
+            && str_contains($body, 'EXT-77')
+            && strpos($body, '<pdf>') < strpos($body, 'szamlaKulsoAzon');
+    });
+});
+
+it('downloads invoice pdf by external id', function () {
+    Http::fake([
+        'www.szamlazz.hu/*' => Http::response('%PDF-1.4 fake', 200, [
+            'szlahu_szamlaszam' => 'E-TESZT-2026-001',
+            'szlahu_id' => '123456789',
+            'Content-Type' => 'application/pdf',
+        ]),
+    ]);
+
+    $client = app(Client::class);
+    $result = $client->getInvoicePdf('EXT-77', LookupType::ExternalId);
+
+    expect($result->isSuccess())->toBeTrue();
+
+    Http::assertSent(function ($request) {
+        $body = (string) $request->body();
+
+        return str_contains($body, 'szamlaKulsoAzon')
+            && strpos($body, 'valaszVerzio') < strpos($body, 'szamlaKulsoAzon');
+    });
+});
+
+it('throws when external id is blank for invoice data', function () {
+    app(Client::class)->getInvoiceData('   ', LookupType::ExternalId);
+})->throws(ValidationException::class, 'A külső számlaazonosító üres');
+
+it('throws when external id is blank for invoice pdf', function () {
+    app(Client::class)->getInvoicePdf('', LookupType::ExternalId);
+})->throws(ValidationException::class, 'A külső számlaazonosító üres');
 
 it('downloads invoice pdf', function () {
     $pdfContent = '%PDF-1.4 fake pdf content for testing';

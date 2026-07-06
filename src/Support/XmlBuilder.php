@@ -143,17 +143,7 @@ class XmlBuilder
     {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
-                $fieldKey = $key;
-
-                if (str_contains($key, 'item')) {
-                    $fieldKey = 'tetel';
-                }
-
-                if (str_contains($key, 'note')) {
-                    $fieldKey = 'kifizetes';
-                }
-
-                $subNode = $xml->addChild($fieldKey);
+                $subNode = $xml->addChild($this->resolveElementName((string) $key));
                 $this->arrayToXml($value, $subNode);
             } else {
                 if (is_bool($value)) {
@@ -163,6 +153,23 @@ class XmlBuilder
                 $xml->addChildWithCData((string) $key, (string) $value);
             }
         }
+    }
+
+    /**
+     * Numbered collection keys (item0, note0, ...) come from the document builders
+     * and must be renamed to their repeating XML element names.
+     */
+    private function resolveElementName(string $key): string
+    {
+        if (preg_match('/^item\d+$/', $key) === 1) {
+            return 'tetel';
+        }
+
+        if (preg_match('/^note\d+$/', $key) === 1) {
+            return 'kifizetes';
+        }
+
+        return $key;
     }
 
     public function formatXml(SimpleXMLElement $xml): DOMDocument
@@ -177,9 +184,9 @@ class XmlBuilder
 
     public function getXmlBase(string $xmlName, string $xmlNs, string $schemaLocation): string
     {
-        $queryData = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
-        $queryData .= "<{$xmlName} xmlns=\"{$xmlNs}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"{$schemaLocation}\">".PHP_EOL;
-        $queryData .= "</{$xmlName}>"."\r\n";
+        $queryData = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+        $queryData .= "<{$xmlName} xmlns=\"{$xmlNs}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"{$schemaLocation}\">"."\n";
+        $queryData .= "</{$xmlName}>"."\n";
 
         return $queryData;
     }

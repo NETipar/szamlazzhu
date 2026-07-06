@@ -17,6 +17,10 @@ enum Language: string
     case Spanish = 'es';
     case Czech = 'cz';
     case Polish = 'pl';
+    case Bulgarian = 'bg';
+    case Dutch = 'nl';
+    case Russian = 'ru';
+    case Slovenian = 'si';
 
     public function label(): string
     {
@@ -32,6 +36,10 @@ enum Language: string
             self::Spanish => 'spanyol',
             self::Czech => 'cseh',
             self::Polish => 'lengyel',
+            self::Bulgarian => 'bolgár',
+            self::Dutch => 'holland',
+            self::Russian => 'orosz',
+            self::Slovenian => 'szlovén',
         };
     }
 }

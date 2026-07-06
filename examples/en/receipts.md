@@ -71,13 +71,19 @@ $result->getDocumentNumber();  // The storno receipt number
 
 ## Query Receipt Data
 
-Querying receipt data by receipt number in JSON/XML format.
+Querying receipt data by receipt number or order number in JSON/XML format.
 
 ```php
 use NETipar\Szamlazzhu\Client;
+use NETipar\Szamlazzhu\Enums\LookupType;
 
 $client = app(Client::class);
+
+// By receipt number (default)
 $result = $client->getReceiptData('NYGTA-2026-1');
+
+// By order number
+$result = $client->getReceiptData('ORD-123', LookupType::OrderNumber);
 
 if ($result->isSuccess()) {
     $data = $result->toArray();

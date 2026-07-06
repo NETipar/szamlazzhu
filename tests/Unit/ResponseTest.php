@@ -98,3 +98,57 @@ it('throws on empty body response', function () {
     $apiResponse = new ApiResponse($rawResponse, ResponseType::Text);
     $apiResponse->handleResponse();
 })->throws(ResponseException::class);
+
+it('throws response exception for malformed xml body', function () {
+    $rawResponse = [
+        'headers' => [
+            'schema-type' => 'invoice',
+        ],
+        'body' => 'not-xml <<< definitely broken',
+    ];
+
+    $apiResponse = new ApiResponse($rawResponse, ResponseType::Xml);
+    $apiResponse->handleResponse();
+})->throws(ResponseException::class, 'A válasz XML feldolgozása sikertelen');
+
+it('throws response exception for malformed taxpayer xml body', function () {
+    $rawResponse = [
+        'headers' => [
+            'schema-type' => 'taxpayer',
+        ],
+        'body' => '<html><body>Gateway error</body></html',
+    ];
+
+    $apiResponse = new ApiResponse($rawResponse, ResponseType::TaxPayerXml);
+    $apiResponse->handleResponse();
+})->throws(ResponseException::class, 'A válasz XML feldolgozása sikertelen');
+
+it('preserves text content when removing namespaces from taxpayer response', function () {
+    $body = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<QueryTaxpayerResponse xmlns="http://schemas.nav.gov.hu/OSA/3.0/api" xmlns:ns2="http://schemas.nav.gov.hu/NTCA/1.0/common">
+    <ns2:header>
+        <ns2:requestId>RID12345</ns2:requestId>
+    </ns2:header>
+    <ns2:result>
+        <ns2:funcCode>OK</ns2:funcCode>
+    </ns2:result>
+    <taxpayerName>Teszt  Kft.</taxpayerName>
+</QueryTaxpayerResponse>
+XML;
+
+    $rawResponse = [
+        'headers' => [
+            'schema-type' => 'taxpayer',
+        ],
+        'body' => $body,
+    ];
+
+    $apiResponse = new ApiResponse($rawResponse, ResponseType::TaxPayerXml);
+    $apiResponse->handleResponse();
+
+    $data = $apiResponse->toArray();
+
+    expect($data['result']['result']['funcCode'])->toBe('OK')
+        ->and($data['result']['taxpayerName'])->toBe('Teszt  Kft.');
+});

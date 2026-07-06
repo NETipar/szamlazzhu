@@ -102,3 +102,43 @@ it('builds correct receipt xml with all fields', function () {
         ->and($xmlArray['fejlec']['elotag'])->toBe('NYGTA')
         ->and($xmlArray['tetelek'])->toHaveCount(1);
 });
+
+it('builds receipt header xml in xsd order with order number', function () {
+    $receipt = new Receipt;
+    $header = $receipt->getHeader();
+    $header->setCallId('CALL-1');
+    $header->setPrefix('NYGTA');
+    $header->setPaymentMethod(PaymentMethod::Cash);
+    $header->setCurrency(Currency::EUR);
+    $header->setExchangeRate(395.5);
+    $header->setExchangeBank('MNB');
+    $header->setComment('Teszt nyugta');
+    $header->setPdfTemplate('sablon');
+    $header->setBuyerLedgerId('VEVO-1');
+    $header->setOrderNumber('ORD-42');
+
+    expect(array_keys($header->toXmlArray()))->toBe([
+        'hivasAzonosito',
+        'elotag',
+        'fizmod',
+        'penznem',
+        'devizaarf',
+        'devizabank',
+        'megjegyzes',
+        'pdfSablon',
+        'fokonyvVevo',
+        'rendelesSzam',
+    ]);
+});
+
+it('includes order number in receipt get xml only when set', function () {
+    $receipt = new Receipt;
+    $receipt->getHeader()->setReceiptNumber('NYGTA-2026-1');
+
+    expect($receipt->getHeader()->toGetXmlArray())->not->toHaveKey('rendelesSzam');
+
+    $receipt->getHeader()->setReceiptNumber(null);
+    $receipt->getHeader()->setOrderNumber('ORD-42');
+
+    expect($receipt->getHeader()->toGetXmlArray())->toBe(['rendelesSzam' => 'ORD-42']);
+});

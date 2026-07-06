@@ -114,6 +114,9 @@ $result = $client->getInvoiceData('E-TESZT-2026-001');
 // Lekérdezés rendelésszám alapján
 $result = $client->getInvoiceData('ORD-123', LookupType::OrderNumber);
 
+// Lekérdezés külső számlaazonosító alapján
+$result = $client->getInvoiceData('EXT-77', LookupType::ExternalId);
+
 if ($result->isSuccess()) {
     $data = $result->toArray();
     // $data['result']['alap']['szamlaszam']

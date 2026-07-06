@@ -30,6 +30,8 @@ class ReceiptHeader extends DocumentHeader
 
     public ?string $buyerLedgerId = null;
 
+    public ?string $orderNumber = null;
+
     public function documentType(): DocumentType
     {
         return DocumentType::Receipt;
@@ -55,12 +57,12 @@ class ReceiptHeader extends DocumentHeader
             $data['penznem'] = $this->resolveCurrency($this->currency);
         }
 
-        if ($this->exchangeBank !== null) {
-            $data['devizabank'] = $this->exchangeBank;
-        }
-
         if ($this->exchangeRate !== null) {
             $data['devizaarf'] = $this->exchangeRate;
+        }
+
+        if ($this->exchangeBank !== null) {
+            $data['devizabank'] = $this->exchangeBank;
         }
 
         if ($this->comment !== null) {
@@ -73,6 +75,10 @@ class ReceiptHeader extends DocumentHeader
 
         if ($this->buyerLedgerId !== null) {
             $data['fokonyvVevo'] = $this->buyerLedgerId;
+        }
+
+        if ($this->orderNumber !== null) {
+            $data['rendelesSzam'] = $this->orderNumber;
         }
 
         return $data;
@@ -103,6 +109,10 @@ class ReceiptHeader extends DocumentHeader
 
         if ($this->receiptNumber !== null) {
             $data['nyugtaszam'] = $this->receiptNumber;
+        }
+
+        if ($this->orderNumber !== null) {
+            $data['rendelesSzam'] = $this->orderNumber;
         }
 
         if ($this->pdfTemplate !== null) {
@@ -189,6 +199,13 @@ class ReceiptHeader extends DocumentHeader
     public function setBuyerLedgerId(?string $buyerLedgerId): static
     {
         $this->buyerLedgerId = $buyerLedgerId;
+
+        return $this;
+    }
+
+    public function setOrderNumber(?string $orderNumber): static
+    {
+        $this->orderNumber = $orderNumber;
 
         return $this;
     }

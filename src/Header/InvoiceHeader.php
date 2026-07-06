@@ -43,6 +43,9 @@ class InvoiceHeader extends DocumentHeader
 
     public ?string $orderNumber = null;
 
+    /** Lookup-only field (szamlaKulsoAzon in the query settings) — never emitted into the invoice fejlec XML. */
+    public ?string $externalId = null;
+
     public ?string $proformaNumber = null;
 
     public ?bool $paid = null;
@@ -299,6 +302,13 @@ class InvoiceHeader extends DocumentHeader
     public function setOrderNumber(?string $orderNumber): static
     {
         $this->orderNumber = $orderNumber;
+
+        return $this;
+    }
+
+    public function setExternalId(?string $externalId): static
+    {
+        $this->externalId = $externalId;
 
         return $this;
     }

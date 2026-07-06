@@ -20,6 +20,8 @@ return [
         'driver' => env('SZAMLAZZHU_SESSION_DRIVER', 'cache'),
         'cache_store' => env('SZAMLAZZHU_SESSION_CACHE_STORE', null),
         'cache_prefix' => 'szamlazzhu_session_',
+        'disk' => env('SZAMLAZZHU_SESSION_DISK', 'local'),
+        'table' => env('SZAMLAZZHU_SESSION_TABLE', 'szamlazzhu_sessions'),
         'ttl' => 3600,
     ],
     'log_channel' => env('SZAMLAZZHU_LOG_CHANNEL', null),

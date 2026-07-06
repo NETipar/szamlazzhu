@@ -24,8 +24,8 @@ class SessionManager
      *     session: array{
      *         driver: string,
      *         ttl?: int,
-     *         prefix?: string,
-     *         store?: string,
+     *         cache_prefix?: string,
+     *         cache_store?: ?string,
      *         disk?: string,
      *         table?: string
      *     }
@@ -35,7 +35,7 @@ class SessionManager
     {
         $sessionConfig = $config['session'] ?? [];
 
-        $this->prefix = $sessionConfig['prefix'] ?? 'szamlazzhu_session_';
+        $this->prefix = $sessionConfig['cache_prefix'] ?? $sessionConfig['prefix'] ?? 'szamlazzhu_session_';
         $this->ttl = $sessionConfig['ttl'] ?? 3600;
         $this->store = $this->createDriver($sessionConfig);
     }
@@ -70,7 +70,7 @@ class SessionManager
         $driver = $config['driver'] ?? 'cache';
 
         return match ($driver) {
-            'cache' => new CacheSessionStore($config['store'] ?? null),
+            'cache' => new CacheSessionStore($config['cache_store'] ?? $config['store'] ?? null),
             'file' => new FileSessionStore($config['disk'] ?? 'local'),
             'database' => new DatabaseSessionStore($config['table'] ?? 'szamlazzhu_sessions'),
             'null' => new NullSessionStore,

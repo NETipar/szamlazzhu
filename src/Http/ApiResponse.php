@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Http;
 
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use NETipar\Szamlazzhu\Enums\ResponseType;
 use NETipar\Szamlazzhu\Enums\SchemaType;
@@ -219,18 +220,37 @@ class ApiResponse
     private function buildResponseXmlData(): void
     {
         if ($this->isTaxPayerResponse()) {
-            $xmlData = new SimpleXmlExtended($this->rawResponse['body']);
-            $xmlData = $this->removeNamespaces($xmlData);
-            $this->xmlData = $xmlData;
-        } else {
-            $xmlData = new SimpleXMLElement($this->rawResponse['body']);
-            $headers = $xmlData->addChild('headers');
+            $xmlData = $this->parseXml($this->rawResponse['body'], extended: true);
+            $this->xmlData = $this->removeNamespaces($xmlData);
 
-            foreach ($this->rawResponse['headers'] as $key => $value) {
-                $headers->addChild($key, htmlspecialchars((string) $value));
-            }
+            return;
+        }
 
-            $this->xmlData = $xmlData;
+        $xmlData = $this->parseXml($this->rawResponse['body']);
+        $headers = $xmlData->addChild('headers');
+
+        foreach ($this->rawResponse['headers'] as $key => $value) {
+            $headers->addChild($key, htmlspecialchars((string) $value));
+        }
+
+        $this->xmlData = $xmlData;
+    }
+
+    private function parseXml(string $xml, bool $extended = false): SimpleXMLElement
+    {
+        $previous = libxml_use_internal_errors(true);
+
+        try {
+            return $extended ? new SimpleXmlExtended($xml) : new SimpleXMLElement($xml);
+        } catch (Exception $exception) {
+            throw new ResponseException(
+                SzamlazzhuException::RESPONSE_XML_PARSE_FAILED.": {$exception->getMessage()}",
+                0,
+                $exception,
+            );
+        } finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($previous);
         }
     }
 
@@ -282,14 +302,14 @@ class ApiResponse
         return $result;
     }
 
+    // TODO(v2.x): replace the regex-based namespace stripping with a DOM localName rewrite.
     private function removeNamespaces(SimpleXMLElement $xml): SimpleXMLElement
     {
         $xmlString = $xml->asXML();
         $cleanedXml = preg_replace('/xmlns[^=]*="[^"]*"/i', '', $xmlString);
         $cleanedXml = preg_replace('/<(\/?)([a-zA-Z0-9]+):/', '<$1', $cleanedXml);
-        $cleanedXml = preg_replace('/\s{2,}/', ' ', $cleanedXml);
 
-        return new SimpleXmlExtended($cleanedXml);
+        return $this->parseXml($cleanedXml, extended: true);
     }
 
     public function toPdf(): ?string

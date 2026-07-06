@@ -85,6 +85,7 @@ class Receipt extends Document
         return $data;
     }
 
+    /** @deprecated Use ReverseReceipt::toXmlArray() instead. */
     public function toReverseXmlArray(array $settings): array
     {
         $data = [];

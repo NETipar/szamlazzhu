@@ -30,11 +30,16 @@ class ApiRequest
 
     private ?string $logChannelConfig;
 
+    /**
+     * @param  array<string, mixed>  $config
+     * @param  array<string, string>  $customHeaders
+     */
     public function __construct(
         array $config,
         private readonly XmlBuilder $xmlBuilder,
         private readonly XmlValidator $xmlValidator,
         private readonly SessionManager $sessionManager,
+        private readonly array $customHeaders = [],
     ) {
         $this->apiUrl = $config['api_url'] ?? 'https://www.szamlazz.hu/szamla/';
         $this->apiKey = $config['api_key'] ?? '';
@@ -163,15 +168,15 @@ class ApiRequest
     }
 
     /**
-     * @return array<int, string>
+     * @return array<string, string>
      */
     private function buildHeaders(): array
     {
-        return [
+        return array_merge([
             'charset' => 'UTF-8',
             'PHP' => PHP_VERSION,
             'API' => '2.0',
-        ];
+        ], $this->customHeaders);
     }
 
     /**

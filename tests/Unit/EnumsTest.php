@@ -2,6 +2,7 @@
 
 use NETipar\Szamlazzhu\Enums\Currency;
 use NETipar\Szamlazzhu\Enums\Language;
+use NETipar\Szamlazzhu\Enums\LookupType;
 use NETipar\Szamlazzhu\Enums\PaymentMethod;
 use NETipar\Szamlazzhu\Enums\ResponseType;
 use NETipar\Szamlazzhu\Enums\VatRate;
@@ -28,7 +29,22 @@ it('has currency labels', function () {
 it('has correct Language values', function () {
     expect(Language::Hungarian->value)->toBe('hu')
         ->and(Language::English->value)->toBe('en')
-        ->and(Language::German->value)->toBe('de');
+        ->and(Language::German->value)->toBe('de')
+        ->and(Language::Bulgarian->value)->toBe('bg')
+        ->and(Language::Dutch->value)->toBe('nl')
+        ->and(Language::Russian->value)->toBe('ru')
+        ->and(Language::Slovenian->value)->toBe('si');
+});
+
+it('aliases DocumentNumber to InvoiceNumber lookup', function () {
+    expect(LookupType::DocumentNumber)->toBe(LookupType::InvoiceNumber);
+});
+
+it('has labels for the new languages', function () {
+    expect(Language::Bulgarian->label())->toBe('bolgár')
+        ->and(Language::Dutch->label())->toBe('holland')
+        ->and(Language::Russian->label())->toBe('orosz')
+        ->and(Language::Slovenian->label())->toBe('szlovén');
 });
 
 it('has correct ResponseType values', function () {

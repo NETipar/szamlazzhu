@@ -197,6 +197,9 @@ $result = $client->getInvoiceData('E-PREFIX-2026-001');
 // By order number
 $result = $client->getInvoiceData('ORD-123', LookupType::OrderNumber);
 
+// By external invoice id
+$result = $client->getInvoiceData('EXT-77', LookupType::ExternalId);
+
 if ($result->isSuccess()) {
     $data = $result->toArray();
     // $data['result']['alap']['szamlaszam']
@@ -220,7 +223,13 @@ if ($pdf) {
 ## Query receipt data
 
 ```php
+use NETipar\Szamlazzhu\Enums\LookupType;
+
+// By receipt number (default)
 $result = $client->getReceiptData('NYGTA-2026-1');
+
+// By order number
+$result = $client->getReceiptData('ORD-123', LookupType::OrderNumber);
 
 if ($result->isSuccess()) {
     $data = $result->toArray();
@@ -267,7 +276,7 @@ Always use enum cases instead of raw strings:
 
 - `PaymentMethod`: `BankTransfer`, `Cash`, `CreditCard`, `Check`, `CashOnDelivery`, `PayPal`, `Szep`, `Otp`, `Compensation`, `Voucher`, `Barion`, `Other`
 - `Currency`: `HUF`, `EUR`, `USD`, `GBP`, `CHF`, and 30+ more ISO currencies
-- `Language`: `Hungarian`, `English`, `German`, `Italian`, `Romanian`, `Slovak`, `Croatian`, `French`, `Spanish`, `Czech`, `Polish`
+- `Language`: `Hungarian`, `English`, `German`, `Italian`, `Romanian`, `Slovak`, `Croatian`, `French`, `Spanish`, `Czech`, `Polish`, `Bulgarian`, `Dutch`, `Russian`, `Slovenian`
 - `VatRate`: `Percent27`, `Percent25`, `Percent20`, `Percent19`, `Percent18`, `Percent7`, `Percent5`, `Percent0`, `TAM`, `AAM`, `EU`, `EUK`, `MAA`, and more
 - `LookupType`: `InvoiceNumber`, `OrderNumber`, `ExternalId` - for querying invoices/PDFs by different identifiers
 - `DocumentType`: `Invoice`, `ReverseInvoice`, `CorrectiveInvoice`, `PrepaymentInvoice`, `FinalInvoice`, `Proforma`, `DeliveryNote`, `Receipt`, `ReverseReceipt`

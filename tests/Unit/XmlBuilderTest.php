@@ -123,3 +123,39 @@ it('tax payer uses correct schema', function () {
 
     expect($mapping['getTaxPayer']['schema'])->toBe(XmlBuilder::XML_SCHEMA_TAXPAYER);
 });
+
+it('renames only numbered item and note collection keys', function () {
+    $builder = new XmlBuilder;
+
+    $xml = $builder->buildXml(
+        'xmlszamla',
+        [
+            'item0' => ['nev' => 'Tétel'],
+            'item12' => ['nev' => 'Másik tétel'],
+            'note0' => ['osszeg' => '100'],
+            'items' => ['nev' => 'Nem tétel'],
+            'noteworthy' => ['nev' => 'Nem kifizetés'],
+        ],
+        XmlBuilder::getXmlNs('xmlszamla'),
+        XmlBuilder::getSchemaLocation('xmlszamla', 'agent'),
+    );
+
+    expect($xml)->toContain('<tetel>')
+        ->toContain('<kifizetes>')
+        ->toContain('<items>')
+        ->toContain('<noteworthy>')
+        ->not->toContain('<item0>')
+        ->not->toContain('<note0>');
+});
+
+it('builds xml base without carriage returns', function () {
+    $builder = new XmlBuilder;
+
+    $base = $builder->getXmlBase(
+        'xmlszamla',
+        XmlBuilder::getXmlNs('xmlszamla'),
+        XmlBuilder::getSchemaLocation('xmlszamla', 'agent'),
+    );
+
+    expect($base)->not->toContain("\r");
+});

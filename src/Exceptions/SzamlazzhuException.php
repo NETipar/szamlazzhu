@@ -54,6 +54,8 @@ class SzamlazzhuException extends \RuntimeException
 
     public const CONNECTION_ERROR = 'Sikertelen kapcsolódás';
 
+    public const RESPONSE_XML_PARSE_FAILED = 'A válasz XML feldolgozása sikertelen';
+
     public const XML_FILE_SAVE_FAILED = 'XML fájl mentése sikertelen';
 
     public const MISSING_CERTIFICATION_FILE = 'A megadott certifikációs fájl nem létezik';

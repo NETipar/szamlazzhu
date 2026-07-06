@@ -12,7 +12,7 @@
 
 Modern Laravel package for the [szamlazz.hu](https://www.szamlazz.hu) invoicing API. Generate invoices, receipts, proforma invoices, delivery notes, query invoice data, download PDFs, and more.
 
-Based on the official [szamlazz.hu PHP SDK](https://docs.szamlazz.hu/hu/php/changelog#21023---20251126) v2.10.23, rebuilt for Laravel with modern PHP 8.1+ features.
+Based on the official [szamlazz.hu PHP SDK](https://docs.szamlazz.hu/hu/php/changelog#2123---20260520) v2.12.3, rebuilt for Laravel with modern PHP 8.3+ features.
 
 ## Quick Example
 
@@ -54,8 +54,8 @@ $result->getPdfFile();        // PDF binary string
 
 ## Requirements
 
-- PHP 8.2+
-- Laravel 10, 11, or 12
+- PHP 8.3+
+- Laravel 10, 11, 12, or 13
 - A [szamlazz.hu](https://www.szamlazz.hu) account with API key
 
 ## Installation
@@ -163,6 +163,7 @@ $receipt = new Receipt();
 $receipt->getHeader()->setPrefix('NYGTA');
 $receipt->getHeader()->setPaymentMethod(PaymentMethod::Cash);
 $receipt->getHeader()->setCurrency(Currency::HUF);
+$receipt->getHeader()->setOrderNumber('ORD-123'); // optional
 
 $receipt->setBuyer(new Buyer(name: 'Customer Name'));
 
@@ -251,6 +252,9 @@ $result = $client->getInvoiceData('E-PREFIX-2026-001');
 // By order number
 $result = $client->getInvoiceData('ORD-123', LookupType::OrderNumber);
 
+// By external invoice id
+$result = $client->getInvoiceData('EXT-77', LookupType::ExternalId);
+
 if ($result->isSuccess()) {
     $data = $result->toArray();
 }
@@ -260,8 +264,13 @@ if ($result->isSuccess()) {
 
 ```php
 use Illuminate\Support\Facades\Storage;
+use NETipar\Szamlazzhu\Enums\LookupType;
 
 $result = $client->getInvoicePdf('E-PREFIX-2026-001');
+
+// By external invoice id
+$result = $client->getInvoicePdf('EXT-77', LookupType::ExternalId);
+
 $pdf = $result->toPdf();
 
 if ($pdf) {
@@ -272,7 +281,13 @@ if ($pdf) {
 ### Query Receipt Data
 
 ```php
+use NETipar\Szamlazzhu\Enums\LookupType;
+
+// By receipt number (default)
 $result = $client->getReceiptData('NYGTA-2026-1');
+
+// By order number
+$result = $client->getReceiptData('ORD-123', LookupType::OrderNumber);
 
 if ($result->isSuccess()) {
     $data = $result->toArray();
@@ -335,7 +350,7 @@ Always use enum cases instead of raw strings:
 
 - **`PaymentMethod`** - `BankTransfer`, `Cash`, `CreditCard`, `Check`, `CashOnDelivery`, `PayPal`, `Szep`, `Otp`, `Compensation`, `Voucher`, `Barion`, `Other`
 - **`Currency`** - `HUF`, `EUR`, `USD`, `GBP`, `CHF`, and 30+ ISO currencies
-- **`Language`** - `Hungarian`, `English`, `German`, `Italian`, `Romanian`, `Slovak`, `Croatian`, `French`, `Spanish`, `Czech`, `Polish`
+- **`Language`** - `Hungarian`, `English`, `German`, `Italian`, `Romanian`, `Slovak`, `Croatian`, `French`, `Spanish`, `Czech`, `Polish`, `Bulgarian`, `Dutch`, `Russian`, `Slovenian`
 - **`VatRate`** - `Percent27`, `Percent5`, `Percent0`, `TAM`, `AAM`, `EU`, `EUK`, `MAA`, and more
 - **`LookupType`** - `InvoiceNumber`, `OrderNumber`, `ExternalId`
 - **`DocumentType`** - `Invoice`, `ReverseInvoice`, `CorrectiveInvoice`, `PrepaymentInvoice`, `FinalInvoice`, `Proforma`, `DeliveryNote`, `Receipt`, `ReverseReceipt`
@@ -411,10 +426,19 @@ SZAMLAZZHU_DOWNLOAD_PDF=true
 SZAMLAZZHU_SAVE_PDF=true
 SZAMLAZZHU_TIMEOUT=30
 SZAMLAZZHU_SESSION_DRIVER=cache
+SZAMLAZZHU_SESSION_DISK=local
+SZAMLAZZHU_SESSION_TABLE=szamlazzhu_sessions
 SZAMLAZZHU_LOG_CHANNEL=null
 ```
 
 The session driver supports `cache` (default), `file`, `database`, and `null` (for testing).
+
+For the `database` session driver, publish and run the migration first:
+
+```bash
+php artisan vendor:publish --tag=szamlazzhu-migrations
+php artisan migrate
+```
 
 ## Testing
 

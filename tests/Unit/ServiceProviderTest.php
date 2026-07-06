@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Support\ServiceProvider;
 use NETipar\Szamlazzhu\Client;
 use NETipar\Szamlazzhu\Session\Contracts\SessionStore;
 use NETipar\Szamlazzhu\Session\Drivers\CacheSessionStore;
 use NETipar\Szamlazzhu\Session\SessionManager;
+use NETipar\Szamlazzhu\SzamlazzhuServiceProvider;
 
 it('registers the config', function () {
     $config = config('szamlazzhu');
@@ -19,6 +21,16 @@ it('registers SessionStore singleton', function () {
     $store = app(SessionStore::class);
 
     expect($store)->toBeInstanceOf(CacheSessionStore::class);
+});
+
+it('resolves the same store instance from SessionStore and SessionManager', function () {
+    expect(app(SessionStore::class))->toBe(app(SessionManager::class)->getStore());
+});
+
+it('registers the migrations publish group', function () {
+    $paths = ServiceProvider::pathsToPublish(SzamlazzhuServiceProvider::class, 'szamlazzhu-migrations');
+
+    expect($paths)->not->toBeEmpty();
 });
 
 it('registers SessionManager singleton', function () {

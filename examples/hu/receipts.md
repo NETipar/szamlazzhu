@@ -71,13 +71,19 @@ $result->getDocumentNumber();  // A sztornó nyugta száma
 
 ## Nyugta adatok lekérdezése
 
-Egy nyugta adatainak lekérdezése a nyugtaszám alapján JSON/XML formátumban.
+Egy nyugta adatainak lekérdezése nyugtaszám vagy rendelésszám alapján JSON/XML formátumban.
 
 ```php
 use NETipar\Szamlazzhu\Client;
+use NETipar\Szamlazzhu\Enums\LookupType;
 
 $client = app(Client::class);
+
+// Nyugtaszám alapján (alapértelmezett)
 $result = $client->getReceiptData('NYGTA-2026-1');
+
+// Rendelésszám alapján
+$result = $client->getReceiptData('ORD-123', LookupType::OrderNumber);
 
 if ($result->isSuccess()) {
     $data = $result->toArray();

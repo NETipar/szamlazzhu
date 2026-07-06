@@ -8,9 +8,16 @@ Install the package via Composer:
 composer require netipar/szamlazzhu
 ```
 
-The package supports Laravel 10, 11, and 12, and requires PHP 8.1 or later.
+The package supports Laravel 10, 11, 12, and 13, and requires PHP 8.3 or later.
 
 The ServiceProvider is automatically registered through Laravel's package discovery system.
+
+If you plan to use the `database` session driver, publish and run the migration:
+
+```bash
+php artisan vendor:publish --tag=szamlazzhu-migrations
+php artisan migrate
+```
 
 ## 2. Publishing the Configuration
 

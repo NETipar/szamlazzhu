@@ -8,9 +8,16 @@ A csomag telepítése Composer segítségével:
 composer require netipar/szamlazzhu
 ```
 
-A csomag Laravel 10, 11 és 12 verziókon támogatott, PHP 8.1 vagy újabb szükséges.
+A csomag Laravel 10, 11, 12 és 13 verziókon támogatott, PHP 8.3 vagy újabb szükséges.
 
 A ServiceProvider automatikusan regisztrálódik a Laravel package discovery rendszeren keresztül.
+
+Ha a `database` session drivert használnád, publikáld és futtasd a migrációt:
+
+```bash
+php artisan vendor:publish --tag=szamlazzhu-migrations
+php artisan migrate
+```
 
 ## 2. Konfiguráció publikálása
 
