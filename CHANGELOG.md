@@ -2,6 +2,11 @@
 
 All notable changes to `netipar/szamlazzhu` will be documented in this file.
 
+## v2.0.1 - 2026-07-06
+
+### Fixed
+- `DatabaseSessionStoreTest` now forces the in-memory sqlite connection so the suite runs on Testbench 8 / Laravel 10 (its mysql default broke the CI leg); no runtime code changes
+
 ## v2.0.0 - 2026-07-06
 
 Ported the official szamlazz.hu PHP SDK changes v2.10.23 → v2.12.3 and added Laravel 13 support.
