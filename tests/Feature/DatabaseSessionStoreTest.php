@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\DB;
 use NETipar\Szamlazzhu\Session\Drivers\DatabaseSessionStore;
 
 beforeEach(function () {
+    // Testbench 8 (Laravel 10) defaults to the mysql connection; force the in-memory sqlite one.
+    config(['database.default' => 'testing']);
+
     $migration = require dirname(__DIR__, 2).'/database/migrations/create_szamlazzhu_sessions_table.php.stub';
     $migration->up();
 });
