@@ -53,7 +53,14 @@ jobs:
           composer run prepare
 
       - name: PHPStan
+        if: runner.os != 'Windows'
         run: composer analyse
+
+      # Larastan boots a Testbench app in every PHPStan worker, and parallel workers
+      # fail to rename the shared services.php manifest on Windows; --debug runs serially.
+      - name: PHPStan (Windows)
+        if: runner.os == 'Windows'
+        run: composer analyse -- --debug
 
       - name: Linter
         run: composer lint:check
