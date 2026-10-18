@@ -13,9 +13,11 @@ class Seller
         public ?string $emailSubject = null,
         public ?string $emailContent = null,
         public ?string $signatoryName = null,
-    ) {
-    }
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

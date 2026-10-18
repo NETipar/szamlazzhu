@@ -14,8 +14,12 @@ class ProformaDeletionResponse implements ResponseContract
 
     protected bool $success = false;
 
+    /** @var array<string, mixed> */
     protected array $headers = [];
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function parseData(array $data): self
     {
         $response = new self;
@@ -57,6 +61,9 @@ class ProformaDeletionResponse implements ResponseContract
         return $this->errorMessage;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getHeaders(): array
     {
         return $this->headers;

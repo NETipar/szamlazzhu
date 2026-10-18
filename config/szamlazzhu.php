@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'api_key' => env('SZAMLAZZHU_API_KEY', ''),
     'api_url' => env('SZAMLAZZHU_API_URL', 'https://www.szamlazz.hu/szamla/'),

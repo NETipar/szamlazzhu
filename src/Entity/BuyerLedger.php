@@ -13,9 +13,11 @@ class BuyerLedger
         public ?bool $continuedFulfillment = null,
         public ?string $settlementPeriodStart = null,
         public ?string $settlementPeriodEnd = null,
-    ) {
-    }
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

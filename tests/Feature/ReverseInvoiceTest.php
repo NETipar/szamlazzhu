@@ -18,7 +18,7 @@ it('generates a reverse invoice successfully', function () {
                 'szlahu_bruttovegosszeg' => '-25400',
                 'szlahu_kintlevoseg' => '0',
                 'Content-Type' => 'application/pdf',
-            ]
+            ],
         ),
     ]);
 

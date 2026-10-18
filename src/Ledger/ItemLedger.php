@@ -9,9 +9,11 @@ abstract class ItemLedger
     public function __construct(
         public string $revenueLedgerNumber = '',
         public string $vatLedgerNumber = '',
-    ) {
-    }
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     abstract public function toXmlArray(): array;
 
     public function setRevenueLedgerNumber(string $revenueLedgerNumber): static

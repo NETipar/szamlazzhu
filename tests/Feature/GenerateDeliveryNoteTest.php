@@ -10,6 +10,8 @@ use NETipar\Szamlazzhu\Entity\Seller;
 use NETipar\Szamlazzhu\Enums\Currency;
 use NETipar\Szamlazzhu\Enums\Language;
 use NETipar\Szamlazzhu\Enums\PaymentMethod;
+use NETipar\Szamlazzhu\Exceptions\SzamlazzhuException;
+use NETipar\Szamlazzhu\Exceptions\ValidationException;
 use NETipar\Szamlazzhu\Item\InvoiceItem;
 
 it('generates a delivery note successfully', function () {
@@ -24,7 +26,7 @@ it('generates a delivery note successfully', function () {
                 'szlahu_bruttovegosszeg' => '19050',
                 'szlahu_kintlevoseg' => '19050',
                 'Content-Type' => 'application/pdf',
-            ]
+            ],
         ),
     ]);
 
@@ -61,4 +63,16 @@ it('generates a delivery note successfully', function () {
     expect($result->isSuccess())->toBeTrue()
         ->and($result->getDocumentNumber())->toBe('S-TESZT-2026-1')
         ->and($result->getPdfFile())->not->toBeNull();
+});
+
+it('does not send a delivery note with simplified items', function () {
+    Http::fake();
+
+    $note = new DeliveryNote;
+    $note->getHeader()->setSimpleItems(true);
+
+    expect(fn () => app(Client::class)->generateDeliveryNote($note))
+        ->toThrow(ValidationException::class, SzamlazzhuException::SIMPLE_ITEMS_NOT_ALLOWED);
+
+    Http::assertNothingSent();
 });

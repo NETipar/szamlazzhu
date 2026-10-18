@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Http;
 
+use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use NETipar\Szamlazzhu\Exceptions\ConnectionException;
@@ -50,7 +51,8 @@ class ApiRequest
     }
 
     /**
-     * @param  array<string, string>  $attachments
+     * @param  array<string, mixed>  $xmlData
+     * @param  array<int, string>  $attachments
      * @return array{headers: array<string, string>, body: string}
      */
     public function send(string $type, array $xmlData, array $attachments = []): array
@@ -100,18 +102,17 @@ class ApiRequest
             $error = $errors[0];
 
             throw new XmlBuildException(
-                SzamlazzhuException::XML_NOT_VALID." a {$error->line}. sorban: {$error->message}."
+                SzamlazzhuException::XML_NOT_VALID." a {$error->line}. sorban: {$error->message}.",
             );
         }
     }
 
     /**
-     * @param  array<string, string>  $attachments
+     * @param  array<int, string>  $attachments
      */
     private function sendRequest(string $fileName, string $xmlContent, array $attachments = []): Response
     {
-        $apiKeyHash = md5($this->apiKey);
-        $sessionId = $this->sessionManager->getSessionId($apiKeyHash);
+        $sessionId = $this->sessionManager->getSessionId($this->apiKeyHash());
 
         $pendingRequest = Http::timeout($this->timeout)
             ->withHeaders($this->buildHeaders());
@@ -129,14 +130,14 @@ class ApiRequest
         if ($sessionId !== null) {
             $pendingRequest = $pendingRequest->withCookies(
                 ['JSESSIONID' => $sessionId],
-                parse_url($this->apiUrl, PHP_URL_HOST) ?: 'www.szamlazz.hu'
+                parse_url($this->apiUrl, PHP_URL_HOST) ?: 'www.szamlazz.hu',
             );
         }
 
         $pendingRequest = $pendingRequest->attach(
             $fileName,
             $xmlContent,
-            $fileName.'.xml'
+            $fileName.'.xml',
         );
 
         foreach ($attachments as $index => $attachmentPath) {
@@ -146,21 +147,29 @@ class ApiRequest
                 continue;
             }
 
+            $contents = file_get_contents($attachmentPath);
+
+            if ($contents === false) {
+                $this->log("Attachment could not be read: {$attachmentPath}", 'warning');
+
+                continue;
+            }
+
             $attachName = 'attachfile'.($index + 1);
             $pendingRequest = $pendingRequest->attach(
                 $attachName,
-                file_get_contents($attachmentPath),
-                basename($attachmentPath)
+                $contents,
+                basename($attachmentPath),
             );
         }
 
         try {
             $response = $pendingRequest->post($this->apiUrl);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ConnectionException(
                 SzamlazzhuException::CONNECTION_ERROR.' - '.$e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
 
@@ -209,10 +218,14 @@ class ApiRequest
         }
 
         if ($sessionId !== null) {
-            $apiKeyHash = md5($this->apiKey);
-            $this->sessionManager->setSessionId($apiKeyHash, $sessionId);
+            $this->sessionManager->setSessionId($this->apiKeyHash(), $sessionId);
             $this->log('Session ID updated.');
         }
+    }
+
+    private function apiKeyHash(): string
+    {
+        return hash('sha256', $this->apiKey);
     }
 
     private function getSchemaType(string $xmlName): string

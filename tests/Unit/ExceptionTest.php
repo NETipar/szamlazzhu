@@ -9,7 +9,7 @@ use NETipar\Szamlazzhu\Exceptions\XmlBuildException;
 it('exception hierarchy extends RuntimeException', function () {
     $exception = new SzamlazzhuException('test');
 
-    expect($exception)->toBeInstanceOf(\RuntimeException::class);
+    expect($exception)->toBeInstanceOf(RuntimeException::class);
 });
 
 it('connection exception extends base exception', function () {

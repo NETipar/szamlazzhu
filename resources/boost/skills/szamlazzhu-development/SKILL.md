@@ -1,6 +1,9 @@
 ---
 name: szamlazzhu-development
 description: Build and integrate szamlazz.hu invoicing features using the netipar/szamlazzhu Laravel package, including invoice/receipt generation, PDF downloads, payment recording, and taxpayer queries.
+license: MIT
+metadata:
+  author: Tibor Hegedűs
 ---
 
 # Szamlazz.hu Integration Development
@@ -95,6 +98,8 @@ $result->isSuccess();          // bool
 $result->getDocumentNumber();  // e.g. 'E-PREFIX-2026-001'
 $result->getPdfFile();         // PDF binary string or null
 ```
+
+Simplified invoice image (`simpleItems`): `$invoice->getHeader()->setSimpleItems(true);`. Allowed on invoices, proforma, pre-payment and final invoices; delivery notes and corrective invoices throw `ValidationException` before the request is sent.
 
 ## Generate a receipt
 
@@ -340,6 +345,10 @@ try {
 }
 ```
 
+## Deprecated APIs
+
+- `InvoiceHeader::setProfitVat()` (`arresAfa`) and `Item::setPriceGapVatBase()` (`arresAfaAlap`): the szamlazz.hu SDK removes them after 2027-02-15, do not use them in new code.
+
 ## Configuration
 
 Key `.env` variables:
@@ -352,7 +361,7 @@ SZAMLAZZHU_TIMEOUT=30
 SZAMLAZZHU_SESSION_DRIVER=cache
 ```
 
-Publish config with: `php artisan vendor:publish --tag=szamlazzhu-config`
+Publish config with: `php artisan vendor:publish --tag=szamlazzhu-config` (the `szamlazzhu` tag publishes the config and the sessions migration together)
 
 ## Entity constructors
 

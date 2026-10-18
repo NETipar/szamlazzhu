@@ -11,8 +11,7 @@ class ReverseInvoice extends Document
 {
     public function __construct(
         public ReverseInvoiceHeader $header = new ReverseInvoiceHeader,
-    ) {
-    }
+    ) {}
 
     public function getHeader(): DocumentHeader
     {
@@ -26,7 +25,10 @@ class ReverseInvoice extends Document
         return $this;
     }
 
-    /** @param array<string, mixed> $settings */
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toXmlArray(array $settings): array
     {
         $data = [];

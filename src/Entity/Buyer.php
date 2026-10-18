@@ -28,9 +28,11 @@ class Buyer
         public ?BuyerLedger $ledgerData = null,
         public ?int $taxPayer = null,
         public ?string $id = null,
-    ) {
-    }
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [

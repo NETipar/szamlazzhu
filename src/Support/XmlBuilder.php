@@ -5,33 +5,35 @@ declare(strict_types=1);
 namespace NETipar\Szamlazzhu\Support;
 
 use DOMDocument;
+use NETipar\Szamlazzhu\Exceptions\SzamlazzhuException;
+use NETipar\Szamlazzhu\Exceptions\XmlBuildException;
 use SimpleXMLElement;
 
 class XmlBuilder
 {
-    public const XML_BASE_URL = 'http://www.szamlazz.hu/';
+    public const string XML_BASE_URL = 'http://www.szamlazz.hu/';
 
-    public const XML_SCHEMA_CREATE_INVOICE = 'xmlszamla';
+    public const string XML_SCHEMA_CREATE_INVOICE = 'xmlszamla';
 
-    public const XML_SCHEMA_CREATE_REVERSE_INVOICE = 'xmlszamlast';
+    public const string XML_SCHEMA_CREATE_REVERSE_INVOICE = 'xmlszamlast';
 
-    public const XML_SCHEMA_PAY_INVOICE = 'xmlszamlakifiz';
+    public const string XML_SCHEMA_PAY_INVOICE = 'xmlszamlakifiz';
 
-    public const XML_SCHEMA_REQUEST_INVOICE_XML = 'xmlszamlaxml';
+    public const string XML_SCHEMA_REQUEST_INVOICE_XML = 'xmlszamlaxml';
 
-    public const XML_SCHEMA_REQUEST_INVOICE_PDF = 'xmlszamlapdf';
+    public const string XML_SCHEMA_REQUEST_INVOICE_PDF = 'xmlszamlapdf';
 
-    public const XML_SCHEMA_CREATE_RECEIPT = 'xmlnyugtacreate';
+    public const string XML_SCHEMA_CREATE_RECEIPT = 'xmlnyugtacreate';
 
-    public const XML_SCHEMA_CREATE_REVERSE_RECEIPT = 'xmlnyugtast';
+    public const string XML_SCHEMA_CREATE_REVERSE_RECEIPT = 'xmlnyugtast';
 
-    public const XML_SCHEMA_SEND_RECEIPT = 'xmlnyugtasend';
+    public const string XML_SCHEMA_SEND_RECEIPT = 'xmlnyugtasend';
 
-    public const XML_SCHEMA_GET_RECEIPT = 'xmlnyugtaget';
+    public const string XML_SCHEMA_GET_RECEIPT = 'xmlnyugtaget';
 
-    public const XML_SCHEMA_TAXPAYER = 'xmltaxpayer';
+    public const string XML_SCHEMA_TAXPAYER = 'xmltaxpayer';
 
-    public const XML_SCHEMA_DELETE_PROFORMA = 'xmlszamladbkdel';
+    public const string XML_SCHEMA_DELETE_PROFORMA = 'xmlszamladbkdel';
 
     /**
      * @return array<string, array{schema: string, fileName: string, xsdDir: string}>
@@ -127,6 +129,9 @@ class XmlBuilder
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function buildXml(string $rootName, array $data, string $xmlNs, string $schemaLocation): string
     {
         $xmlBase = $this->getXmlBase($rootName, $xmlNs, $schemaLocation);
@@ -134,11 +139,18 @@ class XmlBuilder
 
         $this->arrayToXml($data, $xml);
 
-        $formatted = $this->formatXml($xml);
+        $formatted = $this->formatXml($xml)->saveXML();
 
-        return $formatted->saveXML();
+        if ($formatted === false) {
+            throw new XmlBuildException(SzamlazzhuException::XML_DATA_BUILD_FAILED);
+        }
+
+        return $formatted;
     }
 
+    /**
+     * @param  array<array-key, mixed>  $data
+     */
     public function arrayToXml(array $data, SimpleXmlExtended &$xml): void
     {
         foreach ($data as $key => $value) {
@@ -177,7 +189,14 @@ class XmlBuilder
         $xmlDocument = new DOMDocument('1.0');
         $xmlDocument->preserveWhiteSpace = false;
         $xmlDocument->formatOutput = true;
-        $xmlDocument->loadXML($xml->asXML());
+
+        $source = $xml->asXML();
+
+        if ($source === false) {
+            throw new XmlBuildException(SzamlazzhuException::XML_DATA_BUILD_FAILED);
+        }
+
+        $xmlDocument->loadXML($source);
 
         return $xmlDocument;
     }

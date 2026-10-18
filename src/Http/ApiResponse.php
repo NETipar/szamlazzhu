@@ -6,6 +6,7 @@ namespace NETipar\Szamlazzhu\Http;
 
 use Exception;
 use Illuminate\Support\Facades\Storage;
+use JsonException;
 use NETipar\Szamlazzhu\Enums\ResponseType;
 use NETipar\Szamlazzhu\Enums\SchemaType;
 use NETipar\Szamlazzhu\Exceptions\ResponseException;
@@ -31,8 +32,6 @@ class ApiResponse
 
     private ?int $errorCode = null;
 
-    private bool $success = false;
-
     private ?SimpleXMLElement $xmlData = null;
 
     private ?string $content = null;
@@ -43,10 +42,11 @@ class ApiResponse
 
     private ResponseType $responseType;
 
+    /** @var array<string, mixed> */
     private array $config;
 
     /**
-     * @param  array{headers: array<string, string>, body: string}  $rawResponse
+     * @param  array{headers?: array<string, string>, body?: string}  $rawResponse
      * @param  array<string, mixed>  $config
      */
     public function __construct(
@@ -65,7 +65,7 @@ class ApiResponse
             throw new ResponseException(SzamlazzhuException::AGENT_RESPONSE_IS_EMPTY);
         }
 
-        $headers = $this->rawResponse['headers'] ?? [];
+        $headers = $this->rawHeaders();
 
         if (empty($headers)) {
             throw new ResponseException(SzamlazzhuException::AGENT_RESPONSE_NO_HEADER);
@@ -77,7 +77,7 @@ class ApiResponse
             throw new ResponseException(SzamlazzhuException::SYSTEM_DOWN, 500);
         }
 
-        if (! isset($this->rawResponse['body']) || $this->rawResponse['body'] === '') {
+        if ($this->rawBody() === '') {
             throw new ResponseException(SzamlazzhuException::AGENT_RESPONSE_NO_CONTENT);
         }
 
@@ -101,7 +101,7 @@ class ApiResponse
 
         if ($this->isFailed()) {
             throw new ResponseException(
-                SzamlazzhuException::AGENT_ERROR.": [{$this->errorCode}], {$this->errorMsg}"
+                SzamlazzhuException::AGENT_ERROR.": [{$this->errorCode}], {$this->errorMsg}",
             );
         }
 
@@ -124,7 +124,7 @@ class ApiResponse
         $downloadPdf = $this->config['download_pdf'] ?? true;
 
         if (! $downloadPdf) {
-            $this->content = $this->rawResponse['body'];
+            $this->content = $this->rawBody();
 
             return;
         }
@@ -179,17 +179,21 @@ class ApiResponse
 
         $fileName = $xmlPath.'/response-'.$postfix.$name.$typeSuffix.'-'.date('Y-m-d_H-i-s').'.xml';
 
-        if ($this->isTaxPayerResponse()) {
-            Storage::disk($disk)->put($fileName, $this->rawResponse['body']);
-        } else {
-            Storage::disk($disk)->put($fileName, $this->xmlData->asXML());
+        $contents = $this->isTaxPayerResponse() ? $this->rawBody() : $this->xmlData->asXML();
+
+        if ($contents === false) {
+            $this->log(SzamlazzhuException::XML_FILE_SAVE_FAILED.": {$fileName}", 'warning');
+
+            return;
         }
+
+        Storage::disk($disk)->put($fileName, $contents);
     }
 
     private function checkFields(): void
     {
         if ($this->isInvoiceResponse() && $this->responseType === ResponseType::Text) {
-            $keys = implode(',', array_keys($this->rawResponse['headers']));
+            $keys = implode(',', array_keys($this->rawHeaders()));
 
             if (! preg_match('/(szlahu_)/', $keys)) {
                 throw new ResponseException(SzamlazzhuException::NO_SZLAHU_KEY_IN_HEADER);
@@ -202,15 +206,15 @@ class ApiResponse
         $xmlData = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><response></response>');
         $headers = $xmlData->addChild('headers');
 
-        foreach ($this->rawResponse['headers'] as $key => $value) {
+        foreach ($this->rawHeaders() as $key => $value) {
             $headers->addChild($key, htmlspecialchars((string) $value));
         }
 
         if ($this->isReceiptResponse()) {
-            $content = base64_encode($this->rawResponse['body']);
+            $content = base64_encode($this->rawBody());
         } else {
             $downloadPdf = $this->config['download_pdf'] ?? true;
-            $content = $downloadPdf ? base64_encode($this->rawResponse['body']) : $this->rawResponse['body'];
+            $content = $downloadPdf ? base64_encode($this->rawBody()) : $this->rawBody();
         }
 
         $xmlData->addChild('body', $content);
@@ -220,16 +224,16 @@ class ApiResponse
     private function buildResponseXmlData(): void
     {
         if ($this->isTaxPayerResponse()) {
-            $xmlData = $this->parseXml($this->rawResponse['body'], extended: true);
+            $xmlData = $this->parseXml($this->rawBody(), extended: true);
             $this->xmlData = $this->removeNamespaces($xmlData);
 
             return;
         }
 
-        $xmlData = $this->parseXml($this->rawResponse['body']);
+        $xmlData = $this->parseXml($this->rawBody());
         $headers = $xmlData->addChild('headers');
 
-        foreach ($this->rawResponse['headers'] as $key => $value) {
+        foreach ($this->rawHeaders() as $key => $value) {
             $headers->addChild($key, htmlspecialchars((string) $value));
         }
 
@@ -293,8 +297,11 @@ class ApiResponse
         }
 
         if ($this->xmlData !== null) {
-            $jsonEncoded = json_encode($this->xmlData);
-            $result['result'] = json_decode($jsonEncoded, true);
+            try {
+                $result['result'] = json_decode(json_encode($this->xmlData, JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR);
+            } catch (JsonException $exception) {
+                throw new ResponseException(SzamlazzhuException::INVALID_JSON.": {$exception->getMessage()}", 0, $exception);
+            }
         } else {
             $result['result'] = $this->content;
         }
@@ -306,8 +313,16 @@ class ApiResponse
     private function removeNamespaces(SimpleXMLElement $xml): SimpleXMLElement
     {
         $xmlString = $xml->asXML();
-        $cleanedXml = preg_replace('/xmlns[^=]*="[^"]*"/i', '', $xmlString);
-        $cleanedXml = preg_replace('/<(\/?)([a-zA-Z0-9]+):/', '<$1', $cleanedXml);
+
+        $cleanedXml = $xmlString === false ? null : preg_replace(
+            ['/xmlns[^=]*="[^"]*"/i', '/<(\/?)([a-zA-Z0-9]+):/'],
+            ['', '<$1'],
+            $xmlString,
+        );
+
+        if ($cleanedXml === null) {
+            throw new ResponseException(SzamlazzhuException::RESPONSE_XML_PARSE_FAILED);
+        }
 
         return $this->parseXml($cleanedXml, extended: true);
     }
@@ -404,7 +419,7 @@ class ApiResponse
             return null;
         }
 
-        return $this->rawResponse['body'];
+        return $this->rawBody();
     }
 
     private function isInvoiceResponse(): bool
@@ -442,6 +457,19 @@ class ApiResponse
         }
 
         return false;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function rawHeaders(): array
+    {
+        return $this->rawResponse['headers'] ?? [];
+    }
+
+    private function rawBody(): string
+    {
+        return $this->rawResponse['body'] ?? '';
     }
 
     protected function logChannel(): ?string

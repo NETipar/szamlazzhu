@@ -10,5 +10,5 @@ enum LookupType: int
     case OrderNumber = 2;
     case ExternalId = 3;
 
-    public const DocumentNumber = self::InvoiceNumber;
+    public const self DocumentNumber = self::InvoiceNumber;
 }

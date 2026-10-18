@@ -6,7 +6,14 @@ use NETipar\Szamlazzhu\Entity\Seller;
 use NETipar\Szamlazzhu\Enums\Currency;
 use NETipar\Szamlazzhu\Enums\Language;
 use NETipar\Szamlazzhu\Enums\PaymentMethod;
+use NETipar\Szamlazzhu\Exceptions\SzamlazzhuException;
+use NETipar\Szamlazzhu\Exceptions\ValidationException;
+use NETipar\Szamlazzhu\Header\CorrectiveInvoiceHeader;
+use NETipar\Szamlazzhu\Header\DeliveryNoteHeader;
+use NETipar\Szamlazzhu\Header\FinalInvoiceHeader;
 use NETipar\Szamlazzhu\Header\InvoiceHeader;
+use NETipar\Szamlazzhu\Header\PrePaymentInvoiceHeader;
+use NETipar\Szamlazzhu\Header\ProformaHeader;
 use NETipar\Szamlazzhu\Item\InvoiceItem;
 
 it('creates an invoice with header', function () {
@@ -140,3 +147,77 @@ it('invoice header sets document type flags', function () {
         ->and($header->isFinal())->toBeFalse()
         ->and($header->isCorrective())->toBeFalse();
 });
+
+it('emits simpleItems as the last invoice header element', function () {
+    $header = new InvoiceHeader;
+    $header->setPreviewPdf(true)->setSimpleItems(true);
+
+    $xml = $header->toXmlArray();
+
+    expect($xml['simpleItems'])->toBeTrue()
+        ->and(array_slice(array_keys($xml), -2))->toBe(['elonezetpdf', 'simpleItems']);
+});
+
+it('omits simpleItems from the invoice header unless it is enabled', function (?bool $simpleItems) {
+    $header = new InvoiceHeader;
+    $header->setSimpleItems($simpleItems);
+
+    expect($header->toXmlArray())->not->toHaveKey('simpleItems');
+})->with([
+    'not set' => [null],
+    'disabled' => [false],
+]);
+
+it('allows simplified items on the other invoice-family documents', function (InvoiceHeader $header) {
+    $header->setSimpleItems(true);
+
+    expect($header->toXmlArray()['simpleItems'])->toBeTrue();
+})->with([
+    'proforma' => fn () => new ProformaHeader,
+    'prepayment invoice' => fn () => new PrePaymentInvoiceHeader,
+    'final invoice' => fn () => new FinalInvoiceHeader,
+]);
+
+it('rejects simplified items on delivery notes and corrective invoices', function (InvoiceHeader $header) {
+    $header->setSimpleItems(true);
+
+    expect(fn () => $header->toXmlArray())
+        ->toThrow(ValidationException::class, SzamlazzhuException::SIMPLE_ITEMS_NOT_ALLOWED);
+})->with([
+    'delivery note' => fn () => new DeliveryNoteHeader,
+    'corrective invoice' => fn () => new CorrectiveInvoiceHeader,
+]);
+
+it('still emits the deprecated margin scheme VAT fields', function () {
+    $header = new InvoiceHeader;
+    $header->profitVat = true;
+
+    $item = new InvoiceItem;
+    $item->priceGapVatBase = 1000.0;
+
+    expect($header->toXmlArray()['arresAfa'])->toBeTrue()
+        ->and($item->toXmlArray()['arresAfaAlap'])->toBe(1000.0);
+});
+
+it('reports the margin scheme VAT setters as deprecated', function (string $method) {
+    $deprecations = [];
+
+    set_error_handler(function (int $level, string $message) use (&$deprecations): bool {
+        $deprecations[] = $message;
+
+        return true;
+    }, E_USER_DEPRECATED);
+
+    try {
+        match ($method) {
+            'setProfitVat' => (new InvoiceHeader)->setProfitVat(true),
+            'setPriceGapVatBase' => (new InvoiceItem)->setPriceGapVatBase(1000.0),
+        };
+    } finally {
+        restore_error_handler();
+    }
+
+    expect($deprecations)->toHaveCount(1)
+        ->and($deprecations[0])->toContain($method, '2027-02-15');
+})->with(['setProfitVat', 'setPriceGapVatBase'])
+    ->skip(PHP_VERSION_ID < 80400, 'PHP enforces the #[Deprecated] attribute from 8.4 on');

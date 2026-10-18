@@ -1,13 +1,13 @@
-# Changelog
+# Release Notes
 
-All notable changes to `netipar/szamlazzhu` will be documented in this file.
+## [Unreleased](https://github.com/NETipar/szamlazzhu/compare/v2.0.1...main)
 
-## v2.0.1 - 2026-07-06
+## [v2.0.1](https://github.com/NETipar/szamlazzhu/compare/v2.0.0...v2.0.1) - 2026-07-06
 
 ### Fixed
 - `DatabaseSessionStoreTest` now forces the in-memory sqlite connection so the suite runs on Testbench 8 / Laravel 10 (its mysql default broke the CI leg); no runtime code changes
 
-## v2.0.0 - 2026-07-06
+## [v2.0.0](https://github.com/NETipar/szamlazzhu/compare/v1.0.2...v2.0.0) - 2026-07-06
 
 Ported the official szamlazz.hu PHP SDK changes v2.10.23 → v2.12.3 and added Laravel 13 support.
 
@@ -41,21 +41,21 @@ Ported the official szamlazz.hu PHP SDK changes v2.10.23 → v2.12.3 and added L
 - `ApiRequest` is now created via the injectable `ApiRequestFactory`
 - Wire-format regression tests guard the settings element order
 
-## v1.0.2 - 2026-02-10
+## [v1.0.2](https://github.com/NETipar/szamlazzhu/compare/v1.0.1...v1.0.2) - 2026-02-10
 
 ### Fixed
 - Added `guzzlehttp/guzzle` as explicit dependency (required for Laravel 10 where `illuminate/http` only suggests it)
 - Added `phpunit.xml.dist` for proper PHPUnit/Pest configuration in CI
 - Fixed CI workflow: dropped PHP 8.1 from test matrix (Pint and Pest require 8.2+), separated Pint into dedicated job
 
-## v1.0.1 - 2026-02-10
+## [v1.0.1](https://github.com/NETipar/szamlazzhu/compare/v1.0.0...v1.0.1) - 2026-02-10
 
 ### Added
 - GitHub Actions CI workflow for automated testing (PHP 8.1–8.4, Laravel 10–12)
 - Laravel Pint code style enforcement with Laravel framework preset
 - Tests badge in README
 
-## v1.0.0 - 2026-02-10
+## [v1.0.0](https://github.com/NETipar/szamlazzhu/releases/tag/v1.0.0) - 2026-02-10
 
 Initial release based on the official szamlazz.hu PHP SDK v2.10.23.
 

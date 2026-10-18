@@ -7,12 +7,12 @@
 # Szamlazz.hu for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/netipar/szamlazzhu.svg?style=flat-square)](https://packagist.org/packages/netipar/szamlazzhu)
-[![Tests](https://img.shields.io/github/actions/workflow/status/NETipar/szamlazzhu/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/NETipar/szamlazzhu/actions?query=workflow%3ATests+branch%3Amain)
+[![Tests](https://img.shields.io/github/actions/workflow/status/NETipar/szamlazzhu/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/NETipar/szamlazzhu/actions?query=workflow%3Atests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/netipar/szamlazzhu.svg?style=flat-square)](https://packagist.org/packages/netipar/szamlazzhu)
 
 Modern Laravel package for the [szamlazz.hu](https://www.szamlazz.hu) invoicing API. Generate invoices, receipts, proforma invoices, delivery notes, query invoice data, download PDFs, and more.
 
-Based on the official [szamlazz.hu PHP SDK](https://docs.szamlazz.hu/hu/php/changelog#2123---20260520) v2.12.3, rebuilt for Laravel with modern PHP 8.3+ features.
+Based on the official [szamlazz.hu PHP SDK](https://docs.szamlazz.hu/hu/php/changelog#2125---20261005) v2.12.5, rebuilt for Laravel with modern PHP 8.3+ features.
 
 ## Quick Example
 
@@ -55,7 +55,7 @@ $result->getPdfFile();        // PDF binary string
 ## Requirements
 
 - PHP 8.3+
-- Laravel 10, 11, 12, or 13
+- Laravel 12 or 13
 - A [szamlazz.hu](https://www.szamlazz.hu) account with API key
 
 ## Installation
@@ -68,6 +68,12 @@ Publish the config file:
 
 ```bash
 php artisan vendor:publish --tag=szamlazzhu-config
+```
+
+Or publish the config and the sessions migration together:
+
+```bash
+php artisan vendor:publish --tag=szamlazzhu
 ```
 
 Add your API key to `.env`:
@@ -149,6 +155,16 @@ $result->isSuccess();         // bool
 $result->getDocumentNumber(); // e.g. 'E-PREFIX-2026-001'
 $result->getPdfFile();        // PDF binary string or null
 ```
+
+### Simplified Invoice Image
+
+The line items can be printed in a simplified form on the invoice image (`simpleItems`):
+
+```php
+$invoice->getHeader()->setSimpleItems(true);
+```
+
+It works on invoices, proforma invoices, pre-payment and final invoices. On delivery notes and corrective invoices the package throws a `ValidationException` before sending the request.
 
 ### Generate a Receipt
 
@@ -416,6 +432,10 @@ $buyer->email = 'email@example.com';
 $buyer->setPhoneNumber('+36201234567')->setComment('Note');
 ```
 
+## Deprecations
+
+- `InvoiceHeader::setProfitVat()` (`arresAfa`) and `InvoiceItem::setPriceGapVatBase()` (`arresAfaAlap`) are deprecated since SDK 2.12.5: the official szamlazz.hu SDK removes them after 2027-02-15. Until then they still work; on PHP 8.4+ calling them triggers a deprecation notice.
+
 ## Configuration
 
 Key `.env` variables:
@@ -443,8 +463,21 @@ php artisan migrate
 ## Testing
 
 ```bash
-composer test
+composer test        # PHPStan, Pint, type coverage and the Pest suite
+composer test:unit   # the Pest suite only
 ```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Contributing
+
+Please review our [contributing guide](.github/CONTRIBUTING.md) before opening a pull request.
+
+## Security Vulnerabilities
+
+Please review [our security policy](.github/SECURITY.md) on how to report security vulnerabilities.
 
 ## Credits
 

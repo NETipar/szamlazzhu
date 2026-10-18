@@ -8,6 +8,7 @@ use NETipar\Szamlazzhu\Document\Invoice;
 use NETipar\Szamlazzhu\Document\Receipt;
 use NETipar\Szamlazzhu\Document\ReverseInvoice;
 use NETipar\Szamlazzhu\Enums\Currency;
+use NETipar\Szamlazzhu\Enums\InvoiceTemplate;
 use NETipar\Szamlazzhu\Enums\PaymentMethod;
 
 function assertTagsInOrder(string $body, array $tags): bool
@@ -113,5 +114,26 @@ it('keeps the receipt creation settings on the wire', function () {
             'fizmod',
             'penznem',
         ]);
+    });
+});
+
+it('sends simpleItems as the last invoice header element', function () {
+    fakePdfInvoiceResponse();
+
+    $invoice = new Invoice;
+    $invoice->getHeader()->setIssueDate('2026-02-09');
+    $invoice->getHeader()->setPaymentMethod(PaymentMethod::BankTransfer);
+    $invoice->getHeader()->setCurrency(Currency::HUF);
+    $invoice->getHeader()->setInvoiceTemplate(InvoiceTemplate::Default);
+    $invoice->getHeader()->setPreviewPdf(true);
+    $invoice->getHeader()->setSimpleItems(true);
+
+    app(Client::class)->generateInvoice($invoice);
+
+    Http::assertSent(function ($request) {
+        $body = (string) $request->body();
+
+        return assertTagsInOrder($body, ['fejlec', 'eusAfa', 'szamlaSablon', 'elonezetpdf', 'simpleItems'])
+            && preg_match('/<simpleItems>(<!\[CDATA\[)?true(\]\]>)?<\/simpleItems>\s*<\/fejlec>/', $body) === 1;
     });
 });

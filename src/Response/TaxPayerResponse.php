@@ -18,12 +18,16 @@ class TaxPayerResponse implements ResponseContract
 
     protected bool $taxpayerValidity = false;
 
+    /** @var array<string, mixed> */
     protected array $taxpayerData = [];
 
     protected ?string $errorCode = null;
 
     protected ?string $errorMessage = null;
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function parseData(array $data): self
     {
         $response = new self;
@@ -92,6 +96,9 @@ class TaxPayerResponse implements ResponseContract
         return ! empty($this->taxpayerData);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getTaxPayerData(): array
     {
         return $this->taxpayerData;

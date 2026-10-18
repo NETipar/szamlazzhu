@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace NETipar\Szamlazzhu\Header;
 
 use Carbon\Carbon;
+use Deprecated;
 use NETipar\Szamlazzhu\Enums\Currency;
 use NETipar\Szamlazzhu\Enums\DocumentType;
 use NETipar\Szamlazzhu\Enums\InvoiceTemplate;
 use NETipar\Szamlazzhu\Enums\Language;
 use NETipar\Szamlazzhu\Enums\PaymentMethod;
+use NETipar\Szamlazzhu\Exceptions\SzamlazzhuException;
+use NETipar\Szamlazzhu\Exceptions\ValidationException;
 
 class InvoiceHeader extends DocumentHeader
 {
@@ -50,6 +53,7 @@ class InvoiceHeader extends DocumentHeader
 
     public ?bool $paid = null;
 
+    /** @deprecated The szamlazz.hu SDK removes the margin scheme VAT flag (arresAfa) after 2027-02-15. */
     public ?bool $profitVat = null;
 
     public InvoiceTemplate|string|null $invoiceTemplate = null;
@@ -60,11 +64,17 @@ class InvoiceHeader extends DocumentHeader
 
     public ?bool $euVat = null;
 
+    /** Simplified items on the invoice image (simpleItems); not allowed on delivery notes and corrective invoices. */
+    public ?bool $simpleItems = null;
+
     public function documentType(): DocumentType
     {
         return DocumentType::Invoice;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];
@@ -169,6 +179,14 @@ class InvoiceHeader extends DocumentHeader
 
         if ($this->previewPdf === true) {
             $data['elonezetpdf'] = true;
+        }
+
+        if ($this->simpleItems === true) {
+            if ($this->isDeliveryNote() || $this->isCorrective()) {
+                throw new ValidationException(SzamlazzhuException::SIMPLE_ITEMS_NOT_ALLOWED);
+            }
+
+            $data['simpleItems'] = true;
         }
 
         return $data;
@@ -327,6 +345,10 @@ class InvoiceHeader extends DocumentHeader
         return $this;
     }
 
+    /**
+     * @deprecated The szamlazz.hu SDK removes the margin scheme VAT flag (arresAfa) after 2027-02-15.
+     */
+    #[Deprecated(message: 'the szamlazz.hu SDK removes the margin scheme VAT flag (arresAfa) after 2027-02-15')]
     public function setProfitVat(?bool $profitVat): static
     {
         $this->profitVat = $profitVat;
@@ -358,6 +380,13 @@ class InvoiceHeader extends DocumentHeader
     public function setEuVat(?bool $euVat): static
     {
         $this->euVat = $euVat;
+
+        return $this;
+    }
+
+    public function setSimpleItems(?bool $simpleItems): static
+    {
+        $this->simpleItems = $simpleItems;
 
         return $this;
     }

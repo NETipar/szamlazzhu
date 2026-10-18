@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Item;
 
+use Deprecated;
+
 abstract class Item
 {
     public ?string $name = null;
@@ -18,6 +20,7 @@ abstract class Item
 
     public string|float|null $vat = null;
 
+    /** @deprecated The szamlazz.hu SDK removes the margin scheme VAT base (arresAfaAlap) after 2027-02-15. */
     public ?float $priceGapVatBase = null;
 
     public ?float $netPrice = null;
@@ -30,6 +33,9 @@ abstract class Item
 
     public ?int $dataDeletionCode = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     abstract public function toXmlArray(): array;
 
     public function setName(?string $name): static
@@ -74,6 +80,10 @@ abstract class Item
         return $this;
     }
 
+    /**
+     * @deprecated The szamlazz.hu SDK removes the margin scheme VAT base (arresAfaAlap) after 2027-02-15.
+     */
+    #[Deprecated(message: 'the szamlazz.hu SDK removes the margin scheme VAT base (arresAfaAlap) after 2027-02-15')]
     public function setPriceGapVatBase(?float $priceGapVatBase): static
     {
         $this->priceGapVatBase = $priceGapVatBase;

@@ -11,9 +11,11 @@ abstract class Waybill
         public string $parcel = '',
         public string $barcode = '',
         public string $comment = '',
-    ) {
-    }
+    ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];
