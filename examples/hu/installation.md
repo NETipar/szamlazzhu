@@ -8,7 +8,7 @@ A csomag telepítése Composer segítségével:
 composer require netipar/szamlazzhu
 ```
 
-A csomag Laravel 10, 11, 12 és 13 verziókon támogatott, PHP 8.3 vagy újabb szükséges.
+A csomag Laravel 12 és 13 verziókon támogatott, PHP 8.3 vagy újabb szükséges.
 
 A ServiceProvider automatikusan regisztrálódik a Laravel package discovery rendszeren keresztül.
 
@@ -28,6 +28,12 @@ php artisan vendor:publish --tag=szamlazzhu-config
 ```
 
 Ez létrehozza a `config/szamlazzhu.php` fájlt.
+
+A konfigurációt és a session-migrációt a `szamlazzhu` címkével egyszerre is publikálhatod:
+
+```bash
+php artisan vendor:publish --tag=szamlazzhu
+```
 
 ## 3. Környezeti változók (.env)
 

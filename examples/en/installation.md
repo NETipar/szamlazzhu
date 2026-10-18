@@ -8,7 +8,7 @@ Install the package via Composer:
 composer require netipar/szamlazzhu
 ```
 
-The package supports Laravel 10, 11, 12, and 13, and requires PHP 8.3 or later.
+The package supports Laravel 12 and 13, and requires PHP 8.3 or later.
 
 The ServiceProvider is automatically registered through Laravel's package discovery system.
 
@@ -28,6 +28,12 @@ php artisan vendor:publish --tag=szamlazzhu-config
 ```
 
 This creates the `config/szamlazzhu.php` file.
+
+To publish the configuration and the sessions migration at once, use the `szamlazzhu` tag:
+
+```bash
+php artisan vendor:publish --tag=szamlazzhu
+```
 
 ## 3. Environment Variables (.env)
 

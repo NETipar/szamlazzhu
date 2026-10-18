@@ -5,6 +5,7 @@ A `netipar/szamlazzhu` csomag számla-műveleteinek használata.
 ## Tartalomjegyzék
 
 - [Számla generálás](#számla-generálás)
+- [Egyszerűsített számlakép](#egyszerűsített-számlakép)
 - [Sztornó számla](#sztornó-számla)
 - [Számla adatok lekérdezése](#számla-adatok-lekérdezése)
 - [Számla PDF letöltése](#számla-pdf-letöltése)
@@ -72,6 +73,18 @@ $result->isSuccess();          // bool - sikeres volt-e a művelet
 $result->getDocumentNumber();  // 'E-HGDS-2026-318' - a generált számla száma
 $result->getPdfFile();         // PDF tartalom (binary string) vagy null
 ```
+
+---
+
+## Egyszerűsített számlakép
+
+A tételek egyszerűsített formában is megjelenhetnek a számlaképen (`simpleItems`, SDK 2.12.4). Számlán, díjbekérőn, előleg- és végszámlán használható; szállítólevélnél és helyesbítő számlánál a csomag még a küldés előtt `ValidationException`-t dob.
+
+```php
+$invoice->getHeader()->setSimpleItems(true);
+```
+
+> **Elavult:** az `InvoiceHeader::setProfitVat()` (`arresAfa`) és az `InvoiceItem::setPriceGapVatBase()` (`arresAfaAlap`) az SDK 2.12.5 óta elavult, a hivatalos SDK 2027. február 15. után törli. Addig változatlanul működnek.
 
 ---
 

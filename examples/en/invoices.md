@@ -5,6 +5,7 @@ Usage of invoice operations in the `netipar/szamlazzhu` package.
 ## Table of Contents
 
 - [Generate Invoice](#generate-invoice)
+- [Simplified Invoice Image](#simplified-invoice-image)
 - [Reverse Invoice (Storno)](#reverse-invoice-storno)
 - [Query Invoice Data](#query-invoice-data)
 - [Download Invoice PDF](#download-invoice-pdf)
@@ -72,6 +73,18 @@ $result->isSuccess();          // bool - whether the operation was successful
 $result->getDocumentNumber();  // 'E-HGDS-2026-318' - the generated invoice number
 $result->getPdfFile();         // PDF content (binary string) or null
 ```
+
+---
+
+## Simplified Invoice Image
+
+The line items can be printed in a simplified form on the invoice image (`simpleItems`, SDK 2.12.4). It works on invoices, proforma invoices, pre-payment and final invoices; on delivery notes and corrective invoices the package throws a `ValidationException` before sending the request.
+
+```php
+$invoice->getHeader()->setSimpleItems(true);
+```
+
+> **Deprecated:** `InvoiceHeader::setProfitVat()` (`arresAfa`) and `InvoiceItem::setPriceGapVatBase()` (`arresAfaAlap`) are deprecated since SDK 2.12.5; the official SDK removes them after 2027-02-15. They still work until then.
 
 ---
 
