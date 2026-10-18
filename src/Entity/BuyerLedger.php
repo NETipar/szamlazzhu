@@ -15,6 +15,9 @@ class BuyerLedger
         public ?string $settlementPeriodEnd = null,
     ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

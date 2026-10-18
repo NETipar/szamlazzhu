@@ -21,6 +21,9 @@ class MplWaybill extends Waybill
         parent::__construct($destination, WaybillType::Mpl->value, $barcode, $comment);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = parent::toXmlArray();

@@ -30,6 +30,9 @@ abstract class Item
 
     public ?int $dataDeletionCode = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     abstract public function toXmlArray(): array;
 
     public function setName(?string $name): static

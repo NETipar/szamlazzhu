@@ -13,6 +13,9 @@ abstract class Waybill
         public string $comment = '',
     ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

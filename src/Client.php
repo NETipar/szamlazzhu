@@ -169,9 +169,9 @@ class Client
         $proforma = new Proforma;
 
         if ($type === LookupType::InvoiceNumber) {
-            $proforma->getHeader()->setInvoiceNumber($data);
+            $proforma->header->setInvoiceNumber($data);
         } else {
-            $proforma->getHeader()->setOrderNumber($data);
+            $proforma->header->setOrderNumber($data);
         }
 
         $configOverride = [

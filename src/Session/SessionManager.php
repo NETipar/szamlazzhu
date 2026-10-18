@@ -11,6 +11,20 @@ use NETipar\Szamlazzhu\Session\Drivers\DatabaseSessionStore;
 use NETipar\Szamlazzhu\Session\Drivers\FileSessionStore;
 use NETipar\Szamlazzhu\Session\Drivers\NullSessionStore;
 
+/**
+ * The legacy `prefix` and `store` keys are still read as fallbacks for `cache_prefix` and `cache_store`.
+ *
+ * @phpstan-type SessionConfig array{
+ *     driver?: string,
+ *     ttl?: int,
+ *     cache_prefix?: string,
+ *     prefix?: string,
+ *     cache_store?: ?string,
+ *     store?: ?string,
+ *     disk?: string,
+ *     table?: string
+ * }
+ */
 class SessionManager
 {
     private SessionStore $store;
@@ -20,16 +34,7 @@ class SessionManager
     private int $ttl;
 
     /**
-     * @param array{
-     *     session: array{
-     *         driver: string,
-     *         ttl?: int,
-     *         cache_prefix?: string,
-     *         cache_store?: ?string,
-     *         disk?: string,
-     *         table?: string
-     *     }
-     * } $config
+     * @param  array{session?: SessionConfig}  $config
      */
     public function __construct(array $config)
     {
@@ -65,6 +70,9 @@ class SessionManager
         return $this->prefix.$apiKeyHash;
     }
 
+    /**
+     * @param  SessionConfig  $config
+     */
     private function createDriver(array $config): SessionStore
     {
         $driver = $config['driver'] ?? 'cache';

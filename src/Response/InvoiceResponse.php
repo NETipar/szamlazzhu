@@ -9,7 +9,7 @@ use NETipar\Szamlazzhu\Response\Contracts\ResponseContract;
 
 class InvoiceResponse implements ResponseContract
 {
-    public const INVOICE_NOTIFICATION_SEND_FAILED = 56;
+    public const int INVOICE_NOTIFICATION_SEND_FAILED = 56;
 
     protected ?string $invoiceNumber = null;
 
@@ -31,8 +31,12 @@ class InvoiceResponse implements ResponseContract
 
     protected bool $success = false;
 
+    /** @var array<string, mixed> */
     protected array $headers = [];
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function parseData(array $data, ResponseType $type = ResponseType::Text): self
     {
         $response = new self;
@@ -95,6 +99,9 @@ class InvoiceResponse implements ResponseContract
         return $response;
     }
 
+    /**
+     * @param  array<string, mixed>  $result
+     */
     protected static function isPdfResponse(array $result): bool
     {
         if (isset($result['pdf'])) {
@@ -174,6 +181,9 @@ class InvoiceResponse implements ResponseContract
         return $this->pdfData;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getHeaders(): array
     {
         return $this->headers;

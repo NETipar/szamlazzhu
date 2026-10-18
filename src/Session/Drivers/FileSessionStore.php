@@ -39,7 +39,7 @@ class FileSessionStore implements SessionStore
         $data = json_encode([
             'value' => $value,
             'expires_at' => time() + $ttl,
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         Storage::disk($this->disk)->put($this->path($key), $data);
     }

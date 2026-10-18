@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Response;
 
+use JsonException;
 use NETipar\Szamlazzhu\Enums\ResponseType;
+use NETipar\Szamlazzhu\Exceptions\ResponseException;
+use NETipar\Szamlazzhu\Exceptions\SzamlazzhuException;
 use NETipar\Szamlazzhu\Response\Contracts\ResponseContract;
 use SimpleXMLElement;
 
@@ -28,10 +31,13 @@ class ReceiptResponse implements ResponseContract
 
     protected bool $test = false;
 
+    /** @var array<array-key, mixed> */
     protected array $items = [];
 
+    /** @var array<array-key, mixed> */
     protected array $amounts = [];
 
+    /** @var array<array-key, mixed> */
     protected array $creditNotes = [];
 
     protected ?string $errorCode = null;
@@ -42,6 +48,9 @@ class ReceiptResponse implements ResponseContract
 
     protected bool $success = false;
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function parseData(array $data, ResponseType $type = ResponseType::Text): self
     {
         $response = new self;
@@ -171,16 +180,25 @@ class ReceiptResponse implements ResponseContract
         return $this->test;
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     public function getItems(): array
     {
         return $this->items;
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     public function getAmounts(): array
     {
         return $this->amounts;
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     public function getCreditNotes(): array
     {
         return $this->creditNotes;
@@ -223,8 +241,10 @@ class ReceiptResponse implements ResponseContract
      */
     private static function toArray(SimpleXMLElement $xml): array
     {
-        $json = json_encode($xml);
-
-        return json_decode($json, true);
+        try {
+            return json_decode(json_encode($xml, JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            throw new ResponseException(SzamlazzhuException::INVALID_JSON.": {$exception->getMessage()}", 0, $exception);
+        }
     }
 }

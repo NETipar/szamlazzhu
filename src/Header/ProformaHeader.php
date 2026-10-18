@@ -18,11 +18,17 @@ class ProformaHeader extends InvoiceHeader
         return DocumentType::Proforma;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         return parent::toXmlArray();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toDeleteXmlArray(): array
     {
         $data = [];

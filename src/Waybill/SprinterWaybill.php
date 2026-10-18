@@ -25,6 +25,9 @@ class SprinterWaybill extends Waybill
         parent::__construct($destination, WaybillType::Sprinter->value, $barcode, $comment);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = parent::toXmlArray();

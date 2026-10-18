@@ -37,6 +37,9 @@ class ReceiptHeader extends DocumentHeader
         return DocumentType::Receipt;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];
@@ -84,6 +87,9 @@ class ReceiptHeader extends DocumentHeader
         return $data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toReverseXmlArray(): array
     {
         $data = [];
@@ -103,6 +109,9 @@ class ReceiptHeader extends DocumentHeader
         return $data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toGetXmlArray(): array
     {
         $data = [];
@@ -122,6 +131,9 @@ class ReceiptHeader extends DocumentHeader
         return $data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toSendXmlArray(): array
     {
         $data = [];

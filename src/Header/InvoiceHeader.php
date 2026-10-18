@@ -65,6 +65,9 @@ class InvoiceHeader extends DocumentHeader
         return DocumentType::Invoice;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

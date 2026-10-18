@@ -15,17 +15,17 @@ use NETipar\Szamlazzhu\Waybill\Waybill;
 class Invoice extends Document
 {
     /** @deprecated Use LookupType::InvoiceNumber instead */
-    public const FROM_INVOICE_NUMBER = 1;
+    public const int FROM_INVOICE_NUMBER = 1;
 
     /** @deprecated Use LookupType::OrderNumber instead */
-    public const FROM_ORDER_NUMBER = 2;
+    public const int FROM_ORDER_NUMBER = 2;
 
     /** @deprecated Use LookupType::ExternalId instead */
-    public const FROM_INVOICE_EXTERNAL_ID = 3;
+    public const int FROM_INVOICE_EXTERNAL_ID = 3;
 
-    public const CREDIT_NOTES_LIMIT = 5;
+    public const int CREDIT_NOTES_LIMIT = 5;
 
-    public const ATTACHMENTS_LIMIT = 5;
+    public const int ATTACHMENTS_LIMIT = 5;
 
     /**
      * @param  InvoiceCreditNote[]  $creditNotes
@@ -115,7 +115,10 @@ class Invoice extends Document
         return $this;
     }
 
-    /** @param array<string, mixed> $settings */
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toXmlArray(array $settings): array
     {
         $data = [];
@@ -142,6 +145,10 @@ class Invoice extends Document
         return $data;
     }
 
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toCreditsXmlArray(array $settings): array
     {
         $data = [];
@@ -157,7 +164,12 @@ class Invoice extends Document
         return $data;
     }
 
-    /** @deprecated Use ReverseInvoice::toXmlArray() instead. */
+    /**
+     * @deprecated Use ReverseInvoice::toXmlArray() instead.
+     *
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toReverseXmlArray(array $settings): array
     {
         $data = [];

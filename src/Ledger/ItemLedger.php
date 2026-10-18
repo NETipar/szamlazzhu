@@ -11,6 +11,9 @@ abstract class ItemLedger
         public string $vatLedgerNumber = '',
     ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     abstract public function toXmlArray(): array;
 
     public function setRevenueLedgerNumber(string $revenueLedgerNumber): static

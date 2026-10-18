@@ -19,6 +19,9 @@ class InvoiceItemLedger extends ItemLedger
         parent::__construct($revenueLedgerNumber, $vatLedgerNumber);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

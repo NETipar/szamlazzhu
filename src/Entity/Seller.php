@@ -15,6 +15,9 @@ class Seller
         public ?string $signatoryName = null,
     ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

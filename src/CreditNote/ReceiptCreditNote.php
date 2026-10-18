@@ -14,6 +14,9 @@ class ReceiptCreditNote extends CreditNote
         parent::__construct($paymentMode, $amount, $description);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

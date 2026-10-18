@@ -12,7 +12,7 @@ use NETipar\Szamlazzhu\Header\ReceiptHeader;
 
 class Receipt extends Document
 {
-    public const CREDIT_NOTES_LIMIT = 5;
+    public const int CREDIT_NOTES_LIMIT = 5;
 
     /** @param ReceiptCreditNote[] $creditNotes */
     public function __construct(
@@ -65,7 +65,10 @@ class Receipt extends Document
         return $this;
     }
 
-    /** @param array<string, mixed> $settings */
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toXmlArray(array $settings): array
     {
         $data = [];
@@ -84,7 +87,12 @@ class Receipt extends Document
         return $data;
     }
 
-    /** @deprecated Use ReverseReceipt::toXmlArray() instead. */
+    /**
+     * @deprecated Use ReverseReceipt::toXmlArray() instead.
+     *
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toReverseXmlArray(array $settings): array
     {
         $data = [];
@@ -95,6 +103,10 @@ class Receipt extends Document
         return $data;
     }
 
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toGetXmlArray(array $settings): array
     {
         $data = [];
@@ -105,6 +117,10 @@ class Receipt extends Document
         return $data;
     }
 
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     public function toSendXmlArray(array $settings): array
     {
         $data = [];
@@ -123,6 +139,9 @@ class Receipt extends Document
         return $data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function buildCreditsXmlData(): array
     {
         $data = [];
@@ -134,6 +153,9 @@ class Receipt extends Document
         return $data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function buildXmlEmailSendingData(): array
     {
         $data = [];

@@ -12,11 +12,6 @@ class SimpleXmlExtended extends SimpleXMLElement
     public function addCDataToNode(SimpleXMLElement $node, string $value = ''): void
     {
         $domElement = dom_import_simplexml($node);
-
-        if ($domElement === false) {
-            return;
-        }
-
         $domOwner = $domElement->ownerDocument;
 
         if ($domOwner === null) {

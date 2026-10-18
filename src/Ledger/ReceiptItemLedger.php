@@ -6,6 +6,9 @@ namespace NETipar\Szamlazzhu\Ledger;
 
 class ReceiptItemLedger extends ItemLedger
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

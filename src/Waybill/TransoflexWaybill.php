@@ -25,6 +25,9 @@ class TransoflexWaybill extends Waybill
         parent::__construct($destination, WaybillType::Transoflex->value, $barcode, $comment);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = parent::toXmlArray();

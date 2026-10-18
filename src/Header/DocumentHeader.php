@@ -12,6 +12,9 @@ abstract class DocumentHeader
 {
     abstract public function documentType(): DocumentType;
 
+    /**
+     * @return array<string, mixed>
+     */
     abstract public function toXmlArray(): array;
 
     public function isInvoice(): bool

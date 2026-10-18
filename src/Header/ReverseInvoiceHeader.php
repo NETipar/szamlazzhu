@@ -13,6 +13,9 @@ class ReverseInvoiceHeader extends InvoiceHeader
         return DocumentType::ReverseInvoice;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [];

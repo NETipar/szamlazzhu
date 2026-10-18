@@ -51,7 +51,8 @@ class ApiRequest
     }
 
     /**
-     * @param  array<string, string>  $attachments
+     * @param  array<string, mixed>  $xmlData
+     * @param  array<int, string>  $attachments
      * @return array{headers: array<string, string>, body: string}
      */
     public function send(string $type, array $xmlData, array $attachments = []): array
@@ -107,7 +108,7 @@ class ApiRequest
     }
 
     /**
-     * @param  array<string, string>  $attachments
+     * @param  array<int, string>  $attachments
      */
     private function sendRequest(string $fileName, string $xmlContent, array $attachments = []): Response
     {
@@ -147,10 +148,18 @@ class ApiRequest
                 continue;
             }
 
+            $contents = file_get_contents($attachmentPath);
+
+            if ($contents === false) {
+                $this->log("Attachment could not be read: {$attachmentPath}", 'warning');
+
+                continue;
+            }
+
             $attachName = 'attachfile'.($index + 1);
             $pendingRequest = $pendingRequest->attach(
                 $attachName,
-                file_get_contents($attachmentPath),
+                $contents,
                 basename($attachmentPath),
             );
         }

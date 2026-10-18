@@ -29,9 +29,15 @@ abstract class Document
         return $this;
     }
 
-    /** @param array<string, mixed> $settings */
+    /**
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
     abstract public function toXmlArray(array $settings): array;
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
     protected function buildXmlItemsData(): array
     {
         $data = [];

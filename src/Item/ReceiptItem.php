@@ -10,6 +10,9 @@ class ReceiptItem extends Item
 {
     public ?ReceiptItemLedger $ledgerData = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         $data = [

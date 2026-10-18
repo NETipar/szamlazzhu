@@ -12,6 +12,9 @@ class TaxPayer
         $this->taxPayerId = substr($taxPayerId, 0, 8);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toXmlArray(): array
     {
         return [
