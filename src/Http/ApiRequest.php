@@ -112,8 +112,7 @@ class ApiRequest
      */
     private function sendRequest(string $fileName, string $xmlContent, array $attachments = []): Response
     {
-        $apiKeyHash = md5($this->apiKey);
-        $sessionId = $this->sessionManager->getSessionId($apiKeyHash);
+        $sessionId = $this->sessionManager->getSessionId($this->apiKeyHash());
 
         $pendingRequest = Http::timeout($this->timeout)
             ->withHeaders($this->buildHeaders());
@@ -219,10 +218,14 @@ class ApiRequest
         }
 
         if ($sessionId !== null) {
-            $apiKeyHash = md5($this->apiKey);
-            $this->sessionManager->setSessionId($apiKeyHash, $sessionId);
+            $this->sessionManager->setSessionId($this->apiKeyHash(), $sessionId);
             $this->log('Session ID updated.');
         }
+    }
+
+    private function apiKeyHash(): string
+    {
+        return hash('sha256', $this->apiKey);
     }
 
     private function getSchemaType(string $xmlName): string
