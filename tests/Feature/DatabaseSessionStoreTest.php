@@ -9,7 +9,7 @@ beforeEach(function () {
     // Testbench 8 (Laravel 10) defaults to the mysql connection; force the in-memory sqlite one.
     config(['database.default' => 'testing']);
 
-    $migration = require dirname(__DIR__, 2).'/database/migrations/create_szamlazzhu_sessions_table.php.stub';
+    $migration = require dirname(__DIR__, 2).'/database/migrations/2026_07_06_000000_create_szamlazzhu_sessions_table.php';
     $migration->up();
 });
 

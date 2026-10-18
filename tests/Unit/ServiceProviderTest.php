@@ -30,7 +30,22 @@ it('resolves the same store instance from SessionStore and SessionManager', func
 it('registers the migrations publish group', function () {
     $paths = ServiceProvider::pathsToPublish(SzamlazzhuServiceProvider::class, 'szamlazzhu-migrations');
 
-    expect($paths)->not->toBeEmpty();
+    expect(array_values($paths))->toBe([database_path('migrations')]);
+});
+
+it('registers the config publish group', function () {
+    $paths = ServiceProvider::pathsToPublish(SzamlazzhuServiceProvider::class, 'szamlazzhu-config');
+
+    expect(array_values($paths))->toBe([config_path('szamlazzhu.php')]);
+});
+
+it('publishes the config and the migrations together under the package tag', function () {
+    $paths = ServiceProvider::pathsToPublish(SzamlazzhuServiceProvider::class, 'szamlazzhu');
+
+    expect(array_values($paths))->toEqualCanonicalizing([
+        config_path('szamlazzhu.php'),
+        database_path('migrations'),
+    ]);
 });
 
 it('registers SessionManager singleton', function () {

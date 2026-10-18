@@ -16,4 +16,9 @@ return new class extends Migration
             $table->timestamp('expires_at')->index();
         });
     }
+
+    public function down(): void
+    {
+        Schema::dropIfExists(config('szamlazzhu.session.table', 'szamlazzhu_sessions'));
+    }
 };
