@@ -65,8 +65,11 @@ jobs:
       - name: Linter
         run: composer lint:check
 
+      # Type coverage only depends on the source. The Pest 4 plugin (PHP 8.3, Laravel 12 and
+      # prefer-lowest lanes) writes its cache from parallel forks without a reliable lock and
+      # fails at random; the Pest 5 plugin (5.0.1+) holds a blocking lock.
       - name: Type Coverage
-        if: runner.os != 'Windows'
+        if: runner.os != 'Windows' && matrix.laravel == '13.*' && matrix.stability == 'prefer-stable' && matrix.php != 8.3
         run: composer test:types
 
       - name: Test Suite
