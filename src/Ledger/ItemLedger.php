@@ -9,8 +9,7 @@ abstract class ItemLedger
     public function __construct(
         public string $revenueLedgerNumber = '',
         public string $vatLedgerNumber = '',
-    ) {
-    }
+    ) {}
 
     abstract public function toXmlArray(): array;
 

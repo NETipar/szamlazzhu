@@ -11,8 +11,7 @@ class ReverseReceipt extends Document
 {
     public function __construct(
         public ReverseReceiptHeader $header = new ReverseReceiptHeader,
-    ) {
-    }
+    ) {}
 
     public function getHeader(): DocumentHeader
     {

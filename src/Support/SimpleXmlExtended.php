@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Support;
 
+use ReturnTypeWillChange;
 use SimpleXMLElement;
 
 class SimpleXmlExtended extends SimpleXMLElement
@@ -41,7 +42,7 @@ class SimpleXmlExtended extends SimpleXMLElement
         $this->addCDataToNode($this, $value);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function addChild(string $qualifiedName, ?string $value = null, ?string $namespace = null): ?static
     {
         return parent::addChild($qualifiedName, $value, $namespace);

@@ -24,7 +24,7 @@ it('generates a delivery note successfully', function () {
                 'szlahu_bruttovegosszeg' => '19050',
                 'szlahu_kintlevoseg' => '19050',
                 'Content-Type' => 'application/pdf',
-            ]
+            ],
         ),
     ]);
 

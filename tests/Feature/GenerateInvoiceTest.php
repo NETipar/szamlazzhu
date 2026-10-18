@@ -25,7 +25,7 @@ it('generates an invoice successfully', function () {
                 'szlahu_kintlevoseg' => '25400',
                 'szlahu_vevoifiokurl' => 'https%3A%2F%2Fwww.szamlazz.hu%2Fszamla%2F',
                 'Content-Type' => 'application/pdf',
-            ]
+            ],
         ),
     ]);
 

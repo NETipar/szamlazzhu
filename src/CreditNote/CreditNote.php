@@ -10,8 +10,7 @@ abstract class CreditNote
         public string $paymentMode,
         public float $amount = 0.0,
         public string $description = '',
-    ) {
-    }
+    ) {}
 
     abstract public function toXmlArray(): array;
 

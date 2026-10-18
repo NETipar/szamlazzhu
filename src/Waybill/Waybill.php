@@ -11,8 +11,7 @@ abstract class Waybill
         public string $parcel = '',
         public string $barcode = '',
         public string $comment = '',
-    ) {
-    }
+    ) {}
 
     public function toXmlArray(): array
     {

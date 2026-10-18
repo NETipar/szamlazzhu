@@ -13,8 +13,7 @@ class BuyerLedger
         public ?bool $continuedFulfillment = null,
         public ?string $settlementPeriodStart = null,
         public ?string $settlementPeriodEnd = null,
-    ) {
-    }
+    ) {}
 
     public function toXmlArray(): array
     {

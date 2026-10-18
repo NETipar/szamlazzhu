@@ -9,9 +9,7 @@ use NETipar\Szamlazzhu\Session\Contracts\SessionStore;
 
 class FileSessionStore implements SessionStore
 {
-    public function __construct(private string $disk = 'local')
-    {
-    }
+    public function __construct(private string $disk = 'local') {}
 
     public function get(string $key): ?string
     {

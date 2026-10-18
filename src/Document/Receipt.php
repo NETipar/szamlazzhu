@@ -20,8 +20,7 @@ class Receipt extends Document
         public array $creditNotes = [],
         public ?Seller $seller = null,
         public ?Buyer $buyer = null,
-    ) {
-    }
+    ) {}
 
     public function getHeader(): DocumentHeader
     {

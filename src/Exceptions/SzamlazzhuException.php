@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Exceptions;
 
-class SzamlazzhuException extends \RuntimeException
+use RuntimeException;
+
+class SzamlazzhuException extends RuntimeException
 {
     public const SYSTEM_DOWN = 'Az oldal jelenleg karbantartás alatt áll. Kérjük, látogass vissza pár perc múlva.';
 

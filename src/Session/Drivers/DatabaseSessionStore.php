@@ -9,9 +9,7 @@ use NETipar\Szamlazzhu\Session\Contracts\SessionStore;
 
 class DatabaseSessionStore implements SessionStore
 {
-    public function __construct(private string $table = 'szamlazzhu_sessions')
-    {
-    }
+    public function __construct(private string $table = 'szamlazzhu_sessions') {}
 
     public function get(string $key): ?string
     {
@@ -34,7 +32,7 @@ class DatabaseSessionStore implements SessionStore
             [
                 'value' => $value,
                 'expires_at' => now()->addSeconds($ttl),
-            ]
+            ],
         );
     }
 

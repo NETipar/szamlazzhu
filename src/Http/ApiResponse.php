@@ -101,7 +101,7 @@ class ApiResponse
 
         if ($this->isFailed()) {
             throw new ResponseException(
-                SzamlazzhuException::AGENT_ERROR.": [{$this->errorCode}], {$this->errorMsg}"
+                SzamlazzhuException::AGENT_ERROR.": [{$this->errorCode}], {$this->errorMsg}",
             );
         }
 

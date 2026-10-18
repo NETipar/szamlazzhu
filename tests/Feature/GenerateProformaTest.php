@@ -24,7 +24,7 @@ it('generates a proforma successfully', function () {
                 'szlahu_bruttovegosszeg' => '63500',
                 'szlahu_kintlevoseg' => '63500',
                 'Content-Type' => 'application/pdf',
-            ]
+            ],
         ),
     ]);
 

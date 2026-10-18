@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Document;
 
+use InvalidArgumentException;
 use NETipar\Szamlazzhu\CreditNote\InvoiceCreditNote;
 use NETipar\Szamlazzhu\Entity\Buyer;
 use NETipar\Szamlazzhu\Entity\Seller;
@@ -38,8 +39,7 @@ class Invoice extends Document
         public array $creditNotes = [],
         public bool $additive = true,
         public array $attachments = [],
-    ) {
-    }
+    ) {}
 
     public function getHeader(): DocumentHeader
     {
@@ -101,13 +101,13 @@ class Invoice extends Document
     public function addAttachment(string $filePath): static
     {
         if (count($this->attachments) >= self::ATTACHMENTS_LIMIT) {
-            throw new \InvalidArgumentException(
-                'Maximum '.self::ATTACHMENTS_LIMIT.' attachments allowed per invoice.'
+            throw new InvalidArgumentException(
+                'Maximum '.self::ATTACHMENTS_LIMIT.' attachments allowed per invoice.',
             );
         }
 
         if (! file_exists($filePath)) {
-            throw new \InvalidArgumentException("Attachment file does not exist: {$filePath}");
+            throw new InvalidArgumentException("Attachment file does not exist: {$filePath}");
         }
 
         $this->attachments[] = $filePath;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Http;
 
+use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use NETipar\Szamlazzhu\Exceptions\ConnectionException;
@@ -100,7 +101,7 @@ class ApiRequest
             $error = $errors[0];
 
             throw new XmlBuildException(
-                SzamlazzhuException::XML_NOT_VALID." a {$error->line}. sorban: {$error->message}."
+                SzamlazzhuException::XML_NOT_VALID." a {$error->line}. sorban: {$error->message}.",
             );
         }
     }
@@ -129,14 +130,14 @@ class ApiRequest
         if ($sessionId !== null) {
             $pendingRequest = $pendingRequest->withCookies(
                 ['JSESSIONID' => $sessionId],
-                parse_url($this->apiUrl, PHP_URL_HOST) ?: 'www.szamlazz.hu'
+                parse_url($this->apiUrl, PHP_URL_HOST) ?: 'www.szamlazz.hu',
             );
         }
 
         $pendingRequest = $pendingRequest->attach(
             $fileName,
             $xmlContent,
-            $fileName.'.xml'
+            $fileName.'.xml',
         );
 
         foreach ($attachments as $index => $attachmentPath) {
@@ -150,17 +151,17 @@ class ApiRequest
             $pendingRequest = $pendingRequest->attach(
                 $attachName,
                 file_get_contents($attachmentPath),
-                basename($attachmentPath)
+                basename($attachmentPath),
             );
         }
 
         try {
             $response = $pendingRequest->post($this->apiUrl);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ConnectionException(
                 SzamlazzhuException::CONNECTION_ERROR.' - '.$e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
 

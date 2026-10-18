@@ -13,13 +13,9 @@ class NullSessionStore implements SessionStore
         return null;
     }
 
-    public function put(string $key, string $value, int $ttl): void
-    {
-    }
+    public function put(string $key, string $value, int $ttl): void {}
 
-    public function forget(string $key): void
-    {
-    }
+    public function forget(string $key): void {}
 
     public function has(string $key): bool
     {

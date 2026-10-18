@@ -11,8 +11,7 @@ class ReverseInvoice extends Document
 {
     public function __construct(
         public ReverseInvoiceHeader $header = new ReverseInvoiceHeader,
-    ) {
-    }
+    ) {}
 
     public function getHeader(): DocumentHeader
     {

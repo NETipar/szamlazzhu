@@ -9,9 +9,7 @@ use NETipar\Szamlazzhu\Session\Contracts\SessionStore;
 
 class CacheSessionStore implements SessionStore
 {
-    public function __construct(private ?string $store = null)
-    {
-    }
+    public function __construct(private ?string $store = null) {}
 
     public function get(string $key): ?string
     {

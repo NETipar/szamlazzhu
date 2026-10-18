@@ -4,6 +4,4 @@ declare(strict_types=1);
 
 namespace NETipar\Szamlazzhu\Exceptions;
 
-class XmlBuildException extends SzamlazzhuException
-{
-}
+class XmlBuildException extends SzamlazzhuException {}
