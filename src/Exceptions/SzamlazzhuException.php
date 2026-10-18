@@ -61,4 +61,6 @@ class SzamlazzhuException extends RuntimeException
     public const string XML_FILE_SAVE_FAILED = 'XML fájl mentése sikertelen';
 
     public const string MISSING_CERTIFICATION_FILE = 'A megadott certifikációs fájl nem létezik';
+
+    public const string SIMPLE_ITEMS_NOT_ALLOWED = 'Egyszerűsített számlaképet szállítólevél és helyesbítő számla esetén nem lehet használni';
 }
